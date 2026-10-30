@@ -16,10 +16,12 @@ import {
   Search,
   PackageCheck,
   ChevronRight,
+  ArrowRight,
+  Leaf,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { headerConfig, cartCount, wishlist, setShowCartDrawer } = useStore();
+  const { headerConfig, cartCount, cartTotals, wishlist, setShowCartDrawer } = useStore();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
@@ -27,12 +29,12 @@ export const Header: React.FC = () => {
 
   const navLinks = [
     { label: 'Home', href: '/' },
-    { label: 'All Products', href: '/shop' },
+    { label: 'All Catalog', href: '/shop' },
     { label: 'Hair Care', href: '/shop?category=Hair Care' },
     { label: 'Face Care', href: '/shop?category=Face Care' },
     { label: 'Skin & Body', href: '/shop?category=Skin & Body' },
     { label: 'Track Order', href: '/orders' },
-    { label: 'Our Story', href: '/about' },
+    { label: 'Heritage', href: '/about' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -45,25 +47,29 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full sticky top-0 z-40 bg-sandal-50/95 backdrop-blur-md border-b border-sandal-200/60 shadow-xs transition-all">
-      {/* Top Announcement Bar - Dynamically Controlled from Admin */}
+    <header className="w-full sticky top-0 z-50 transition-all duration-300">
+      {/* 1. TOP ANNOUNCEMENT TICKER (Controlled from Admin) */}
       {headerConfig.announcementActive && (
-        <div className="bg-botanical-800 text-sandal-100 text-xs py-2 px-4 transition-all">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
-            <div className="flex items-center justify-center gap-2 overflow-hidden">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="font-medium tracking-wide truncate">
+        <div className="bg-[#0A1610] text-sandal-200 text-xs py-2 px-4 border-b border-sandal-500/15">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1">
+            <div className="flex items-center gap-2 overflow-hidden mx-auto sm:mx-0">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-medium tracking-wider text-sandal-100 text-[11px] sm:text-xs">
                 {headerConfig.announcementText}
               </span>
             </div>
-            <div className="hidden md:flex items-center gap-4 text-xs text-sandal-200/80">
+
+            <div className="hidden md:flex items-center gap-4 text-xs">
               {headerConfig.phone && (
                 <a
                   href={`tel:${headerConfig.phone}`}
-                  className="flex items-center gap-1 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-sandal-300/80 hover:text-sandal-200 transition-colors"
                 >
-                  <Phone className="w-3 h-3" />
-                  <span>{headerConfig.phone}</span>
+                  <Phone className="w-3 h-3 text-sandal-400" />
+                  <span className="tracking-wide">{headerConfig.phone}</span>
                 </a>
               )}
               {headerConfig.whatsapp && (
@@ -71,7 +77,7 @@ export const Header: React.FC = () => {
                   href={`https://wa.me/${headerConfig.whatsapp.replace(/\D/g, '')}?text=Hello%20Harpudhas%20Store`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 hover:text-white transition-colors text-emerald-300"
+                  className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
                 >
                   <MessageCircle className="w-3 h-3" />
                   <span>WhatsApp Care</span>
@@ -82,162 +88,166 @@ export const Header: React.FC = () => {
         </div>
       )}
 
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-4">
-          {/* Mobile Menu Button */}
-          <div className="flex items-center lg:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-botanical-800 hover:bg-sandal-100 transition-colors focus:outline-none"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+      {/* 2. MAIN REGAL NAVBAR */}
+      <div className="bg-[#0E2018]/95 backdrop-blur-md border-b border-[#C89D54]/25 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 gap-4">
+            {/* Mobile Menu Trigger */}
+            <div className="flex items-center lg:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-xl text-sandal-200 hover:bg-white/10 transition-colors focus:outline-none"
+                aria-label="Toggle Navigation Menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
 
-          {/* Brand Logo - Dynamically Controlled from Admin */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-botanical-800 text-sandal-300 flex items-center justify-center shadow-md border border-sandal-500/40 group-hover:scale-105 transition-transform duration-300">
-                <Sparkles className="w-5 h-5 text-sandal-500" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-2xl font-bold tracking-widest text-botanical-900 group-hover:text-botanical-700 transition-colors">
-                  {headerConfig.logoTitle || "HÀRPUDHA'S"}
-                </span>
-                <span className="text-[9px] font-sans tracking-[0.22em] text-sandal-700 uppercase font-semibold">
-                  {headerConfig.logoSubtitle || 'TRADITIONAL SIDDHA CARE'}
-                </span>
-              </div>
-            </Link>
-          </div>
+            {/* BRAND LOGO - High-End Luxury Emblem */}
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/" className="group flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-botanical-700 via-botanical-800 to-botanical-950 text-sandal-300 flex items-center justify-center shadow-lg border border-[#C89D54]/50 group-hover:scale-105 transition-transform duration-300">
+                  <Sparkles className="w-5 h-5 text-sandal-400 animate-pulse" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-serif text-2xl font-bold tracking-[0.18em] text-white group-hover:text-sandal-300 transition-colors">
+                    {headerConfig.logoTitle || "HÀRPUDHA'S"}
+                  </span>
+                  <span className="text-[9px] font-sans tracking-[0.28em] text-sandal-400/90 uppercase font-semibold">
+                    {headerConfig.logoSubtitle || 'TRADITIONAL SIDDHA & BOTANICAL SKINCARE'}
+                  </span>
+                </div>
+              </Link>
+            </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium tracking-wide transition-colors ${
-                    isActive
-                      ? 'text-botanical-900 font-semibold bg-sandal-200/50'
-                      : 'text-botanical-700 hover:text-botanical-950 hover:bg-sandal-100/70'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
+            {/* DESKTOP NAV - Elegant Typography with Gold Active Indicators */}
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`relative px-3.5 py-2 text-xs font-semibold tracking-wider uppercase transition-all duration-200 ${
+                      isActive
+                        ? 'text-sandal-300 font-bold'
+                        : 'text-sandal-100/80 hover:text-white hover:bg-white/5 rounded-lg'
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0.5 left-3.5 right-3.5 h-[2px] bg-gradient-to-r from-sandal-400 to-amber-300 rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          {/* Right Action Icons & Admin Button */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Search Trigger */}
-            <button
-              onClick={() => setShowSearchModal(true)}
-              className="p-2 rounded-full text-botanical-800 hover:bg-sandal-100 hover:text-botanical-950 transition-colors"
-              title="Search products"
-            >
-              <Search className="w-5 h-5" />
-            </button>
+            {/* RIGHT ICONS & ADMIN PORTAL BUTTON */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Search Button */}
+              <button
+                onClick={() => setShowSearchModal(true)}
+                className="p-2.5 rounded-full text-sandal-200 hover:text-white hover:bg-white/10 transition-colors"
+                title="Search formulations"
+              >
+                <Search className="w-4 h-4" />
+              </button>
 
-            {/* Wishlist Link */}
-            <Link
-              href="/shop"
-              className="relative p-2 rounded-full text-botanical-800 hover:bg-sandal-100 transition-colors hidden sm:inline-flex"
-              title="Saved items"
-            >
-              <Heart className="w-5 h-5" />
-              {wishlist.length > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-terracotta-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
+              {/* Wishlist Link */}
+              <Link
+                href="/shop"
+                className="relative p-2.5 rounded-full text-sandal-200 hover:text-white hover:bg-white/10 transition-colors hidden sm:inline-flex"
+                title="Saved Items"
+              >
+                <Heart className="w-4 h-4" />
+                {wishlist.length > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-terracotta-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
 
-            {/* Cart Trigger */}
-            <button
-              onClick={() => setShowCartDrawer(true)}
-              className="relative p-2 rounded-full text-botanical-800 hover:bg-sandal-100 transition-colors flex items-center gap-1.5"
-              title="View Cart Drawer"
-            >
-              <ShoppingBag className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="w-5 h-5 bg-botanical-700 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+              {/* Cart Drawer Trigger */}
+              <button
+                onClick={() => setShowCartDrawer(true)}
+                className="relative p-2.5 rounded-full text-sandal-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5"
+                title="View Herbal Basket"
+              >
+                <ShoppingBag className="w-4 h-4 text-sandal-300" />
+                {cartCount > 0 && (
+                  <span className="w-5 h-5 bg-sandal-500 text-botanical-950 text-xs font-bold rounded-full flex items-center justify-center shadow-md">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
 
-            {/* ADMIN PANEL BUTTON - Highlighted for Store Owners */}
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-botanical-800 text-sandal-200 hover:bg-botanical-900 hover:text-white transition-all shadow-sm border border-sandal-600/30"
-              title="Manage Products, Orders & Content"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-sandal-500" />
-              <span className="hidden sm:inline">Admin Panel</span>
-              <span className="sm:hidden">Admin</span>
-            </Link>
+              {/* ADMIN PANEL ACCESS BUTTON */}
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-sandal-500/15 hover:bg-sandal-500/25 text-sandal-300 hover:text-white border border-[#C89D54]/50 transition-all shadow-sm"
+                title="Admin Control Panel"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-sandal-400" />
+                <span className="hidden sm:inline">Admin Panel</span>
+                <span className="sm:hidden">Admin</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer */}
+      {/* MOBILE NAV DRAWER */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-sandal-200 bg-sandal-50 px-4 pt-3 pb-6 space-y-2 animate-fadeIn">
-          <div className="grid grid-cols-1 gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-botanical-900 hover:bg-sandal-200/60 transition-colors"
-              >
-                <span>{link.label}</span>
-                <ChevronRight className="w-4 h-4 text-sandal-500" />
-              </Link>
-            ))}
+        <div className="lg:hidden border-t border-slate-800 bg-[#0A1610] px-4 pt-3 pb-6 space-y-1.5 animate-fadeIn">
+          {navLinks.map((link) => (
             <Link
-              href="/orders"
+              key={link.label}
+              href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-botanical-900 hover:bg-sandal-200/60 transition-colors"
+              className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-sandal-100 hover:bg-white/10 transition-colors uppercase tracking-wider"
             >
-              <span className="flex items-center gap-2">
-                <PackageCheck className="w-4 h-4 text-botanical-700" />
-                Track My Order
-              </span>
-              <ChevronRight className="w-4 h-4 text-sandal-500" />
+              <span>{link.label}</span>
+              <ChevronRight className="w-4 h-4 text-sandal-400" />
             </Link>
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold bg-botanical-800 text-sandal-100 hover:bg-botanical-900 transition-colors mt-2"
-            >
-              <span className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-sandal-500" />
-                Admin Dashboard (Full Control)
-              </span>
-              <ChevronRight className="w-4 h-4 text-sandal-500" />
-            </Link>
-          </div>
+          ))}
+          <Link
+            href="/orders"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-emerald-400 hover:bg-white/10 transition-colors uppercase tracking-wider"
+          >
+            <span className="flex items-center gap-2">
+              <PackageCheck className="w-4 h-4" />
+              Track Live Order
+            </span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/admin"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sandal-500/20 text-sandal-300 border border-sandal-500/40 hover:bg-sandal-500/30 transition-colors uppercase tracking-wider mt-2"
+          >
+            <span className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-sandal-400" />
+              Admin Portal (Manage Store)
+            </span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       )}
 
-      {/* Quick Search Modal */}
+      {/* SEARCH MODAL */}
       {showSearchModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-24 px-4 animate-modal-pop">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 border border-sandal-200">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-24 px-4 animate-modal-pop">
+          <div className="bg-[#0E2018] rounded-3xl shadow-2xl max-w-xl w-full p-6 border border-[#C89D54]/40 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-serif font-bold text-botanical-900">
-                Search Herbal Formulations
+              <h3 className="text-lg font-serif font-bold text-sandal-200 flex items-center gap-2">
+                <Leaf className="w-4 h-4 text-emerald-400" />
+                <span>Search Authentic Formulations</span>
               </h3>
               <button
                 onClick={() => setShowSearchModal(false)}
-                className="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                className="p-1 rounded-full text-gray-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -246,17 +256,17 @@ export const Header: React.FC = () => {
               <input
                 type="text"
                 autoFocus
-                placeholder="Search by hair oil, kumkumadi, shikakai, neem..."
+                placeholder="Search hair oil, kumkumadi, shikakai, neem, ubtan..."
                 value={quickSearch}
                 onChange={(e) => setQuickSearch(e.target.value)}
-                className="w-full px-4 py-3 pl-11 rounded-xl border border-sandal-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 focus:border-transparent text-sm"
+                className="w-full px-4 py-3 pl-11 rounded-xl bg-[#08130E] border border-sandal-500/40 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sandal-500"
               />
-              <Search className="w-5 h-5 text-gray-400 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 text-sandal-400 absolute left-3.5 top-3.5" />
               <button
                 type="submit"
-                className="mt-3 w-full py-2.5 rounded-xl bg-botanical-800 text-white font-medium text-sm hover:bg-botanical-900 transition-colors"
+                className="mt-3 w-full py-2.5 rounded-xl bg-sandal-500 text-botanical-950 font-bold text-xs hover:bg-sandal-400 transition-colors uppercase tracking-wider"
               >
-                Find Products
+                Find Herbal Remedy
               </button>
             </form>
           </div>

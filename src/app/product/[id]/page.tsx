@@ -1,6 +1,6 @@
 import React from 'react';
 import { INITIAL_PRODUCTS } from '@/data/initialData';
-import ProductDetailClient from './ProductDetailClient';
+import ProductDetailClient from '@/components/ProductDetailClient';
 
 // Required for Next.js static export
 export function generateStaticParams() {

@@ -16,35 +16,38 @@ import {
   Heart,
   Droplets,
   Leaf,
-  Flower2,
   ChevronDown,
   Clock,
   Award,
+  MessageCircle,
+  Check,
 } from 'lucide-react';
 import { CategoryType } from '@/types/store';
 
 export default function HomePage() {
-  const { products, addToCart, wishlist, toggleWishlist } = useStore();
+  const { products, addToCart, wishlist, toggleWishlist, footerConfig } = useStore();
 
+  const [heroProductIndex, setHeroProductIndex] = useState(0);
   const [quizArea, setQuizArea] = useState<CategoryType>('Hair Care');
   const [quizConcern, setQuizConcern] = useState<string>('growth');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  // Selected sizes for products on home page
   const [selectedSizes, setSelectedSizes] = useState<Record<string, number>>({});
 
   const handleSizeChange = (productId: string, sizeIdx: number) => {
     setSelectedSizes((prev) => ({ ...prev, [productId]: sizeIdx }));
   };
 
-  // Filter bestselling or signature products
+  // Top 3 hero spotlight items
+  const heroSpotlightProducts = products.slice(0, 3);
+  const currentHeroProduct = heroSpotlightProducts[heroProductIndex] || products[0];
+
   const featuredProducts = products.slice(0, 6);
 
   const categories = [
     {
       title: 'Hair Care & Tonics',
       tamil: 'கூந்தல் பராமரிப்பு',
-      desc: 'Cold-pressed Hibiscus, Bhringraj & Shikakai',
+      desc: 'Cold-pressed Hibiscus, Bhringraj & Shikakai for hair fall control and thickness.',
       image: '/images/hair-oil.jpg',
       href: '/shop?category=Hair Care',
       tag: 'Bestselling Oils',
@@ -52,7 +55,7 @@ export default function HomePage() {
     {
       title: 'Face Care & Radiance',
       tamil: 'முகப்பொலிவு சிகிச்சை',
-      desc: 'Pure Kashmiri Saffron & Red Sandalwood',
+      desc: 'Pure Kashmiri Saffron & Red Sandalwood for timeless bridal radiance.',
       image: '/images/face-cream.jpg',
       href: '/shop?category=Face Care',
       tag: 'Kumkumadi Glow',
@@ -60,7 +63,7 @@ export default function HomePage() {
     {
       title: 'Skin & Body Rituals',
       tamil: 'உடல் பாதுகாப்பு',
-      desc: 'Traditional 18-Herb Nalangu Maavu & Shea',
+      desc: 'Traditional 18-Herb Nalangu Maavu & Shea bath bars for natural detox.',
       image: '/images/body-soap.jpg',
       href: '/shop?category=Skin & Body',
       tag: 'Ancestral Bath',
@@ -75,122 +78,196 @@ export default function HomePage() {
 
   const faqs = [
     {
-      q: 'Are Hàrpudha’s products 100% natural and free from chemicals?',
-      a: 'Yes, absolutely. Every formulation is handcrafted strictly following authentic Siddha and Ayurvedic scriptures. We do not use parabens, sulfates, silicones, synthetic fragrances, or mineral oils.',
+      q: 'Are Hàrpudha’s products 100% natural and chemical-free?',
+      a: 'Yes, absolutely. Every formulation is handcrafted strictly following authentic Siddha and Ayurvedic scriptures. We use zero sulfates, zero parabens, zero silicones, and zero mineral oils.',
     },
     {
       q: 'How long before I see results from the Hibiscus & Bhringraj Hair Oil?',
-      a: 'Most customers notice significant reduction in hair fall and improved scalp nourishment within 2 to 3 weeks of regular application (2-3 times weekly with gentle scalp massage).',
+      a: 'Most customers notice visible reduction in hair fall and improved scalp hydration within 2 to 3 weeks of regular application (2-3 times weekly with gentle scalp massage).',
     },
     {
       q: 'What is your delivery timeframe across India?',
-      a: 'Orders are freshly packed within 24 hours at our Pollachi herbal facility. Delivery takes 2-4 business days for Tamil Nadu & South India, and 4-6 business days for the rest of India.',
+      a: 'Orders are freshly packed within 24 hours at our Pollachi herbal facility. Delivery takes 2-4 business days for South India and 4-6 business days for the rest of India.',
     },
     {
       q: 'Can I track my order once placed?',
-      a: 'Yes! Once you place an order, you will receive an Order ID (e.g., HARP-7821). You can visit our "Track Order" page anytime to see live updates from Pending -> Confirmed -> Packed -> Shipped -> Delivered.',
+      a: 'Yes! Once you place an order, you will receive an Order ID (e.g. HARP-7821). You can visit our "Track Order" page anytime to see live updates from Pending -> Confirmed -> Packed -> Shipped -> Delivered.',
     },
   ];
 
   return (
     <div className="w-full">
-      {/* 1. HERO SECTION - High Conversion, Luxurious & Traditional */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-botanical-900 via-botanical-800 to-botanical-900 text-white pt-8 pb-20 lg:pt-14 lg:pb-28">
-        {/* Subtle decorative background foliage & blur circles */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-sandal-500/15 blur-3xl pointer-events-none" />
+      {/* 1. LUXURIOUS HERO SECTION - STUNNING, COHESIVE & HIGH-CONVERTING */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E2018] via-[#122A1F] to-[#0A1711] text-white pt-8 pb-20 lg:pt-16 lg:pb-28">
+        {/* Ambient golden and emerald glow orbs */}
+        <div className="absolute top-0 right-1/4 -mt-24 w-96 h-96 rounded-full bg-[#C89D54]/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+            {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              {/* Top Herbal Heritage Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-sandal-500/20 text-sandal-300 border border-sandal-400/30 backdrop-blur-md">
+              {/* Heritage Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-[#C89D54]/15 text-sandal-300 border border-[#C89D54]/30 backdrop-blur-md">
                 <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% தூய இயற்கை • Authentic Siddha Formulations</span>
+                <span>பாரம்பரிய தமிழ் சித்த மருத்துவம் • 100% தூய மூலிகை</span>
               </div>
 
               {/* Main Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight tracking-tight">
                 Awaken Timeless <br />
-                <span className="text-sandal-300 italic font-normal">Herbal Radiance</span> With <br />
-                Ancestral Wisdom.
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sandal-200 via-amber-300 to-sandal-400 italic font-normal">
+                  Herbal Radiance
+                </span>{' '}
+                With <br />
+                Sacred Botanicals.
               </h1>
 
-              {/* Sub-headline */}
+              {/* Subtitle */}
               <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
-                Slow-infused in traditional bronze urulis with hand-harvested botanicals from the Western Ghats.
-                Formulated for pure hair nourishment, glowing complexion, and soothing body wellness.
+                Slow-infused in traditional bronze urulis with hand-harvested Western Ghats herbs,
+                cold-pressed virgin seed oils, and pure Kashmiri saffron. Zero sulfates, nil mineral oils.
               </p>
 
-              {/* CTA Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              {/* Quick Trust Checks */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 max-w-xl mx-auto lg:mx-0 text-xs text-sandal-200">
+                <div className="flex items-center justify-center lg:justify-start gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>Wood-Milled Virgin Oils</span>
+                </div>
+                <div className="flex items-center justify-center lg:justify-start gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>72h Bronze Uruli Infusion</span>
+                </div>
+                <div className="flex items-center justify-center lg:justify-start gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>Lab Tested in Pollachi</span>
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-3">
                 <Link
                   href="/shop"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-400 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-sandal-500 to-amber-400 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:from-sandal-400 hover:to-amber-300 transition-all duration-200 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 group"
                 >
-                  <ShoppingBag className="w-4 h-4 text-botanical-900" />
-                  <span>Shop Herbal Essentials</span>
+                  <ShoppingBag className="w-4 h-4 text-botanical-950" />
+                  <span>Shop Herbal Catalog</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
 
                 <a
                   href="#ayurvedic-quiz"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-all duration-200 border border-white/20 flex items-center justify-center gap-2 backdrop-blur-md"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs uppercase tracking-wider transition-all duration-200 border border-white/20 flex items-center justify-center gap-2 backdrop-blur-md"
                 >
                   <Sparkles className="w-4 h-4 text-sandal-300" />
-                  <span>Find Your Dosha Routine</span>
+                  <span>Take 30-Sec Dosha Quiz</span>
                 </a>
+
+                {footerConfig.whatsapp && (
+                  <a
+                    href={`https://wa.me/${footerConfig.whatsapp.replace(/\D/g, '')}?text=Hello%20Harpudhas%20Store%2C%20I%20need%20herbal%20consultation`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4 text-emerald-400" />
+                    <span>WhatsApp Doctor</span>
+                  </a>
+                )}
               </div>
 
-              {/* Trust Metrics */}
+              {/* Trust Metric Row */}
               <div className="pt-6 border-t border-botanical-700/60 grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0">
                 <div className="text-center lg:text-left">
-                  <div className="text-2xl font-serif font-bold text-sandal-200">50K+</div>
-                  <div className="text-xs text-sandal-300/80">Happy Ritualists</div>
+                  <div className="text-2xl font-serif font-bold text-sandal-300">50K+</div>
+                  <div className="text-xs text-sandal-200/80">Happy Ritualists</div>
                 </div>
                 <div className="text-center lg:text-left border-x border-botanical-700/60 px-2">
-                  <div className="text-2xl font-serif font-bold text-sandal-200">4.9 ★</div>
-                  <div className="text-xs text-sandal-300/80">Average Rating</div>
+                  <div className="text-2xl font-serif font-bold text-sandal-300">4.9 ★</div>
+                  <div className="text-xs text-sandal-200/80">Certified Reviews</div>
                 </div>
                 <div className="text-center lg:text-left">
-                  <div className="text-2xl font-serif font-bold text-sandal-200">100%</div>
-                  <div className="text-xs text-sandal-300/80">Chemical-Free</div>
+                  <div className="text-2xl font-serif font-bold text-sandal-300">100%</div>
+                  <div className="text-xs text-sandal-200/80">Chemical-Free</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Visual Card */}
-            <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md aspect-4/5 rounded-3xl overflow-hidden shadow-2xl border-2 border-sandal-500/30 group">
+            {/* Right Column: Visual Hero Showcase with Fixed Height & Interactive Switcher */}
+            <div className="lg:col-span-5 relative flex flex-col items-center">
+              {/* Main Showcase Frame with guaranteed height */}
+              <div className="relative w-full max-w-md h-[480px] sm:h-[540px] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#C89D54]/50 group bg-slate-900">
                 <Image
-                  src={withBasePath('/images/hero-banner.jpg')}
-                  alt="Harpudhas Herbal Botanicals Heritage"
+                  src={withBasePath(currentHeroProduct.image || '/images/hero-banner.jpg')}
+                  alt={currentHeroProduct.name}
                   fill
                   priority
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-botanical-950/80 via-transparent to-black/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
 
-                {/* Floating Badge 1 - Top Left */}
-                <div className="absolute top-4 left-4 bg-botanical-900/90 backdrop-blur-md border border-sandal-500/40 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                {/* Floating Badge Top Left */}
+                <div className="absolute top-4 left-4 bg-[#0A1610]/90 backdrop-blur-md border border-[#C89D54]/50 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg">
                   <Award className="w-4 h-4 text-sandal-400" />
                   <div>
-                    <p className="text-[10px] text-sandal-200 uppercase font-semibold">Ancient Heritage</p>
-                    <p className="text-xs font-bold text-white">Siddha Certified</p>
+                    <p className="text-[10px] text-sandal-300 uppercase font-semibold">Heirloom Siddha</p>
+                    <p className="text-xs font-bold text-white">Batch Certified</p>
                   </div>
                 </div>
 
-                {/* Floating Badge 2 - Bottom Right */}
-                <div className="absolute bottom-5 right-5 bg-white/95 backdrop-blur-md text-botanical-900 p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-sandal-300 max-w-[220px]">
-                  <div className="w-10 h-10 rounded-full bg-botanical-800 text-sandal-300 flex items-center justify-center font-bold flex-shrink-0">
-                    <Droplets className="w-5 h-5 text-sandal-400" />
+                {/* Floating Badge Top Right */}
+                <div className="absolute top-4 right-4 bg-[#0A1610]/90 backdrop-blur-md border border-emerald-500/50 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg">
+                  <div className="flex items-center text-amber-400">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-botanical-950">Cold-Pressed</p>
-                    <p className="text-[11px] text-gray-600">Virgin Wood-Milled Oils</p>
-                  </div>
+                  <span className="text-xs font-bold text-white">4.9 / 5</span>
                 </div>
+
+                {/* Bottom Product Spotlight Glass Card */}
+                <div className="absolute bottom-4 left-4 right-4 bg-[#0E2018]/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-[#C89D54]/40 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">
+                      {currentHeroProduct.badge} • {currentHeroProduct.tamilName}
+                    </span>
+                    <h3 className="text-xs sm:text-sm font-serif font-bold text-white line-clamp-1">
+                      {currentHeroProduct.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-sm font-bold text-sandal-300">
+                        ₹{currentHeroProduct.price}
+                      </span>
+                      <span className="text-xs text-gray-400 line-through">
+                        ₹{currentHeroProduct.mrp}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => addToCart(currentHeroProduct.id, 0, 1)}
+                    className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sandal-500 to-amber-400 text-botanical-950 font-bold text-xs hover:from-sandal-400 hover:to-amber-300 transition-all flex items-center gap-1 shadow-md whitespace-nowrap"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add +</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Interactive Showcase Selector Pills */}
+              <div className="mt-4 flex items-center justify-center gap-2">
+                {heroSpotlightProducts.map((p, idx) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setHeroProductIndex(idx)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                      heroProductIndex === idx
+                        ? 'bg-sandal-500 text-botanical-950 border-sandal-400 shadow-md scale-105'
+                        : 'bg-white/10 text-sandal-200 border-white/15 hover:bg-white/20'
+                    }`}
+                  >
+                    {p.name.split(' ')[0]}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -200,7 +277,7 @@ export default function HomePage() {
       {/* 2. DYNAMIC OFFER BANNERS (Target: Home or All) */}
       <BannerDisplay page="home" />
 
-      {/* 3. BROWSE BY CATEGORY */}
+      {/* 3. BROWSE BY ANCESTRAL CATEGORY */}
       <section className="py-16 bg-[#F7F3E8] border-y border-sandal-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -229,7 +306,7 @@ export default function HomePage() {
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-108"
                   />
-                  <div className="absolute top-3 right-3 bg-botanical-900/80 backdrop-blur-xs text-sandal-200 text-xs px-2.5 py-1 rounded-full font-medium">
+                  <div className="absolute top-3 right-3 bg-botanical-900/85 backdrop-blur-xs text-sandal-200 text-xs px-2.5 py-1 rounded-full font-medium">
                     {cat.tag}
                   </div>
                 </div>
@@ -255,7 +332,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. BESTSELLING HERBAL FORMULATIONS */}
+      {/* 4. SIGNATURE HERBAL FORMULATIONS */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
           <div>
@@ -387,7 +464,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. INTERACTIVE AYURVEDIC DOSHA / ROUTINE QUIZ */}
+      {/* 5. AYURVEDIC DOSHA QUIZ */}
       <section id="ayurvedic-quiz" className="py-20 bg-botanical-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -404,7 +481,6 @@ export default function HomePage() {
                 botanicals to restore natural equilibrium and deep cellular nourishment.
               </p>
 
-              {/* Step 1: Area */}
               <div className="space-y-2 pt-2">
                 <label className="text-xs text-sandal-300 font-semibold uppercase">1. Focus Area</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -424,7 +500,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Step 2: Concern */}
               <div className="space-y-2 pt-2">
                 <label className="text-xs text-sandal-300 font-semibold uppercase">2. Concern</label>
                 <div className="flex flex-wrap gap-2">
@@ -489,7 +564,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Quiz Recommendation Cards */}
+            {/* Recommendations */}
             <div className="lg:col-span-7 bg-botanical-800/60 p-6 sm:p-8 rounded-3xl border border-botanical-700/80">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -561,7 +636,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3">
+            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 1
               </div>
@@ -571,7 +646,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3">
+            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 2
               </div>
@@ -581,7 +656,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3">
+            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 3
               </div>
@@ -591,7 +666,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3">
+            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 4
               </div>
