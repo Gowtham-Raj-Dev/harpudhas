@@ -128,6 +128,11 @@ export default function AdminPage() {
   const [activePageContentTab, setActivePageContentTab] = useState<'home' | 'about' | 'contact' | 'shop'>('home');
   const [pagesForm, setPagesForm] = useState<PageContents>(pageContents);
 
+  // Sync page contents when loaded from store localStorage
+  React.useEffect(() => {
+    setPagesForm(pageContents);
+  }, [pageContents]);
+
   // Header & Footer Local State
   const [headerForm, setHeaderForm] = useState(headerConfig);
   const [footerForm, setFooterForm] = useState(footerConfig);
@@ -1061,94 +1066,746 @@ export default function AdminPage() {
 
               {/* HOME CONTENT FORM */}
               {activePageContentTab === 'home' && (
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                  <h3 className="font-serif font-bold text-base text-slate-900 pb-2 border-b border-slate-100">
-                    Home Page Headings & Subtitles
-                  </h3>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Hero Badge Pill Text</label>
-                    <input
-                      type="text"
-                      value={pagesForm.home.heroBadge}
-                      onChange={(e) =>
-                        setPagesForm({
-                          ...pagesForm,
-                          home: { ...pagesForm.home, heroBadge: e.target.value },
-                        })
-                      }
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-botanical-800"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Hero Main Headline</label>
-                    <input
-                      type="text"
-                      value={pagesForm.home.heroTitle}
-                      onChange={(e) =>
-                        setPagesForm({
-                          ...pagesForm,
-                          home: { ...pagesForm.home, heroTitle: e.target.value },
-                        })
-                      }
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-botanical-800"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Hero Subtitle Paragraph</label>
-                    <textarea
-                      rows={2}
-                      value={pagesForm.home.heroSubtitle}
-                      onChange={(e) =>
-                        setPagesForm({
-                          ...pagesForm,
-                          home: { ...pagesForm.home, heroSubtitle: e.target.value },
-                        })
-                      }
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-botanical-800"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700">Category Section Title</label>
-                      <input
-                        type="text"
-                        value={pagesForm.home.catTitle}
-                        onChange={(e) =>
-                          setPagesForm({
-                            ...pagesForm,
-                            home: { ...pagesForm.home, catTitle: e.target.value },
-                          })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
-                      />
+                <div className="space-y-6">
+                  {/* Section 1: Hero & Badges */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 1</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Hero Section & Marquee Bar</h3>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700">Products Section Title</label>
-                      <input
-                        type="text"
-                        value={pagesForm.home.prodTitle}
-                        onChange={(e) =>
-                          setPagesForm({
-                            ...pagesForm,
-                            home: { ...pagesForm.home, prodTitle: e.target.value },
-                          })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Hero Tamil / Siddha Badge Text</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.heroBadge}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, heroBadge: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Hero Main Headline</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.heroTitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, heroTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-serif"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Hero Subtitle Paragraph</label>
+                        <textarea
+                          rows={2}
+                          value={pagesForm.home.heroSubtitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, heroSubtitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Hero Primary CTA Button</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.heroBtn1 || 'Shop Herbal Catalog'}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, heroBtn1: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Hero Secondary CTA Button</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.heroBtn2 || 'Take 30-Sec Dosha Quiz'}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, heroBtn2: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Floating Marquee Banner Text</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.marqueeText || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, marqueeText: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => updatePageContent('home', pagesForm.home)}
-                    className="px-6 py-2.5 rounded-xl bg-botanical-800 hover:bg-botanical-900 text-white font-bold text-xs flex items-center gap-2 shadow-xs"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>Save Home Page Content</span>
-                  </button>
+                  {/* Section 2: Value Proposition (4 USPs) */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 2</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Value Proposition Bar (4 Feature USPs)</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* USP 1 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-emerald-800 uppercase">USP 1 (Leaf Icon)</span>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={pagesForm.home.usp1Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp1Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          value={pagesForm.home.usp1Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp1Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                      {/* USP 2 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-amber-700 uppercase">USP 2 (Alchemy Uruli Icon)</span>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={pagesForm.home.usp2Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp2Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          value={pagesForm.home.usp2Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp2Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                      {/* USP 3 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-emerald-800 uppercase">USP 3 (Express Delivery)</span>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={pagesForm.home.usp3Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp3Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          value={pagesForm.home.usp3Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp3Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                      {/* USP 4 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-amber-700 uppercase">USP 4 (Lab Certified)</span>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={pagesForm.home.usp4Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp4Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description"
+                          value={pagesForm.home.usp4Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, usp4Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Categories Section */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 3</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Ancestral Categories Section</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Category Section Eyebrow</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.catEyebrow || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, catEyebrow: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Category Section Main Title</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.catTitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, catTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Category Subtitle Description</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.catSubtitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, catSubtitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 4: Bestsellers Products Section */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 4</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Featured & Bestselling Products Section</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Products Section Eyebrow</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.prodEyebrow || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, prodEyebrow: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Products Main Heading</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.prodTitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, prodTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Products Subtitle Description</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.prodSubtitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, prodSubtitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">View All Button Label</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.prodBtnText || 'View All Products'}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, prodBtnText: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 5: Interactive Dosha Quiz Section */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 5</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Interactive Ayurvedic Dosha Quiz</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Quiz Eyebrow Tag</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.quizEyebrow || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, quizEyebrow: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Quiz Main Title</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.quizTitle || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, quizTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Quiz Subtitle</label>
+                        <textarea
+                          rows={2}
+                          value={pagesForm.home.quizSubtitle || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, quizSubtitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Quiz Match Header Label</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.quizMatchTitle || 'Recommended Routine'}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, quizMatchTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 6: 4-Stage Artisan Process */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 6</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Ancestral 4-Stage Artisan Process</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Process Section Eyebrow</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.processEyebrow || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, processEyebrow: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Process Section Title</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.processTitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, processTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-xs font-bold text-slate-700">Process Subtitle</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.processSubtitle}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, processSubtitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+
+                      {/* Step 1 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-slate-700 uppercase">Stage 1</span>
+                        <input
+                          type="text"
+                          placeholder="Stage 1 Title"
+                          value={pagesForm.home.step1Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step1Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Stage 1 Description"
+                          value={pagesForm.home.step1Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step1Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* Step 2 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-slate-700 uppercase">Stage 2</span>
+                        <input
+                          type="text"
+                          placeholder="Stage 2 Title"
+                          value={pagesForm.home.step2Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step2Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Stage 2 Description"
+                          value={pagesForm.home.step2Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step2Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* Step 3 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-slate-700 uppercase">Stage 3</span>
+                        <input
+                          type="text"
+                          placeholder="Stage 3 Title"
+                          value={pagesForm.home.step3Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step3Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Stage 3 Description"
+                          value={pagesForm.home.step3Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step3Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* Step 4 */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-slate-700 uppercase">Stage 4</span>
+                        <input
+                          type="text"
+                          placeholder="Stage 4 Title"
+                          value={pagesForm.home.step4Title || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step4Title: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Stage 4 Description"
+                          value={pagesForm.home.step4Desc || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, step4Desc: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 7: Frequently Asked Questions (FAQ) */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="pb-2 border-b border-slate-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-botanical-800">Section 7</span>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Frequently Asked Questions (FAQ)</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">FAQ Section Eyebrow</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.faqEyebrow || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faqEyebrow: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">FAQ Section Heading</label>
+                        <input
+                          type="text"
+                          value={pagesForm.home.faqTitle || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faqTitle: e.target.value },
+                            })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                        />
+                      </div>
+
+                      {/* FAQ 1 */}
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-botanical-900">Question 1</span>
+                        <input
+                          type="text"
+                          placeholder="Question 1 text"
+                          value={pagesForm.home.faq1Q || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq1Q: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Answer 1 explanation"
+                          value={pagesForm.home.faq1A || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq1A: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* FAQ 2 */}
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-botanical-900">Question 2</span>
+                        <input
+                          type="text"
+                          placeholder="Question 2 text"
+                          value={pagesForm.home.faq2Q || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq2Q: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Answer 2 explanation"
+                          value={pagesForm.home.faq2A || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq2A: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* FAQ 3 */}
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-botanical-900">Question 3</span>
+                        <input
+                          type="text"
+                          placeholder="Question 3 text"
+                          value={pagesForm.home.faq3Q || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq3Q: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Answer 3 explanation"
+                          value={pagesForm.home.faq3A || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq3A: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+
+                      {/* FAQ 4 */}
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="text-[11px] font-bold text-botanical-900">Question 4</span>
+                        <input
+                          type="text"
+                          placeholder="Question 4 text"
+                          value={pagesForm.home.faq4Q || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq4Q: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-900"
+                        />
+                        <textarea
+                          rows={2}
+                          placeholder="Answer 4 explanation"
+                          value={pagesForm.home.faq4A || ''}
+                          onChange={(e) =>
+                            setPagesForm({
+                              ...pagesForm,
+                              home: { ...pagesForm.home, faq4A: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Save All Home Page Content Button */}
+                  <div className="sticky bottom-6 z-20 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xl flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Save All Home Page Sections</h4>
+                      <p className="text-[11px] text-slate-500">Changes immediately persist to the live store.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        updatePageContent('home', pagesForm.home);
+                        triggerToast('All Home Page sections content saved successfully!');
+                      }}
+                      className="px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Save All Home Content</span>
+                    </button>
+                  </div>
                 </div>
               )}
 

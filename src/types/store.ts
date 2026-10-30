@@ -125,15 +125,65 @@ export interface FooterConfig {
 
 export interface PageContents {
   home: {
+    // 1. Hero & Badges
     heroBadge: string;
     heroTitle: string;
     heroSubtitle: string;
+    heroBtn1: string;
+    heroBtn2: string;
+    marqueeText: string;
+
+    // 2. Value Proposition (4 USPs)
+    usp1Title: string;
+    usp1Desc: string;
+    usp2Title: string;
+    usp2Desc: string;
+    usp3Title: string;
+    usp3Desc: string;
+    usp4Title: string;
+    usp4Desc: string;
+
+    // 3. Categories Section
+    catEyebrow: string;
     catTitle: string;
     catSubtitle: string;
+
+    // 4. Bestselling Products Section
+    prodEyebrow: string;
     prodTitle: string;
     prodSubtitle: string;
+    prodBtnText: string;
+
+    // 5. Ayurvedic Dosha Quiz Section
+    quizEyebrow: string;
+    quizTitle: string;
+    quizSubtitle: string;
+    quizMatchTitle: string;
+
+    // 6. 4-Stage Artisan Process Section
+    processEyebrow: string;
     processTitle: string;
     processSubtitle: string;
+    step1Title: string;
+    step1Desc: string;
+    step2Title: string;
+    step2Desc: string;
+    step3Title: string;
+    step3Desc: string;
+    step4Title: string;
+    step4Desc: string;
+
+    // 7. Frequently Asked Questions (FAQ) Section
+    faqEyebrow: string;
+    faqTitle: string;
+    faq1Q: string;
+    faq1A: string;
+    faq2Q: string;
+    faq2A: string;
+    faq3Q: string;
+    faq3A: string;
+    faq4Q: string;
+    faq4A: string;
   };
   about: {
     title: string;

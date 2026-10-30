@@ -2,23 +2,22 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useStore } from '@/context/StoreContext';
+import { withBasePath } from '@/data/products';
 import {
   ShoppingBag,
   Heart,
   Search,
   Menu,
   X,
-  ShieldCheck,
-  Sparkles,
   ChevronRight,
   PackageCheck,
-  Tag,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { headerConfig, cartCount, wishlist, setShowCartDrawer } = useStore();
+  const { cartCount, wishlist, setShowCartDrawer } = useStore();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
@@ -45,7 +44,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="w-full sticky top-0 z-40 bg-[#FCFBF7]/95 backdrop-blur-md border-b border-[#E2D2B0]/60 shadow-xs transition-all duration-200">
-      {/* SINGLE LINE HEADER (NO 2-LINES!) */}
+      {/* SINGLE CLEAN LINE HEADER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-4">
           {/* Mobile Menu Button */}
@@ -59,19 +58,17 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Brand Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-botanical-800 text-sandal-300 flex items-center justify-center shadow-sm border border-sandal-500/40 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5 text-sandal-400" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-2xl font-bold tracking-[0.16em] text-botanical-950 group-hover:text-botanical-700 transition-colors">
-                  {headerConfig.logoTitle || "HÀRPUDHA'S"}
-                </span>
-                <span className="text-[9px] font-sans tracking-[0.24em] text-sandal-700 uppercase font-semibold">
-                  {headerConfig.logoSubtitle || 'TRADITIONAL SIDDHA CARE'}
-                </span>
+          {/* Official Brand Logo Image */}
+          <div className="flex-shrink-0 flex items-center py-1">
+            <Link href="/" className="group flex items-center" aria-label="Hàrpudha's Home">
+              <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-full overflow-hidden shadow-md border-2 border-amber-600/50 bg-black group-hover:scale-105 transition-transform flex items-center justify-center">
+                <Image
+                  src={withBasePath('/images/logo.png')}
+                  alt="Hàrpudha's Logo"
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
             </Link>
           </div>
@@ -99,20 +96,12 @@ export const Header: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Action Utilities (Single Row) */}
+          {/* Right Action Utilities (Search, Wishlist, Cart) */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Promo Pill Badge */}
-            {headerConfig.announcementActive && (
-              <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
-                <Tag className="w-3 h-3 text-emerald-600" />
-                <span className="font-semibold">Code: HARPUDHAS15</span>
-              </div>
-            )}
-
             {/* Search Trigger */}
             <button
               onClick={() => setShowSearchModal(true)}
-              className="p-2 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors"
+              className="p-2.5 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors"
               title="Search products"
             >
               <Search className="w-5 h-5" />
@@ -121,7 +110,7 @@ export const Header: React.FC = () => {
             {/* Wishlist */}
             <Link
               href="/shop"
-              className="relative p-2 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors hidden sm:inline-flex"
+              className="relative p-2.5 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors hidden sm:inline-flex"
               title="Saved items"
             >
               <Heart className="w-5 h-5" />
@@ -135,7 +124,7 @@ export const Header: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setShowCartDrawer(true)}
-              className="relative p-2 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors flex items-center gap-1.5"
+              className="relative p-2.5 rounded-full text-botanical-900 hover:bg-sandal-200/60 transition-colors flex items-center gap-1.5"
               title="Shopping Basket"
             >
               <ShoppingBag className="w-5 h-5" />
@@ -145,16 +134,6 @@ export const Header: React.FC = () => {
                 </span>
               )}
             </button>
-
-            {/* Admin Portal Button */}
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-botanical-800 text-sandal-200 hover:bg-botanical-900 hover:text-white transition-all shadow-xs"
-              title="Store Admin Dashboard"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-sandal-400" />
-              <span className="hidden sm:inline">Admin</span>
-            </Link>
           </div>
         </div>
       </div>
@@ -181,17 +160,6 @@ export const Header: React.FC = () => {
             <span className="flex items-center gap-2">
               <PackageCheck className="w-4 h-4" />
               Track Live Order
-            </span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold bg-botanical-800 text-sandal-100 hover:bg-botanical-900 transition-colors uppercase tracking-wider mt-2"
-          >
-            <span className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-sandal-400" />
-              Store Admin Panel
             </span>
             <ChevronRight className="w-4 h-4" />
           </Link>

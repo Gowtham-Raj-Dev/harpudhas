@@ -70,16 +70,66 @@ export const INITIAL_FOOTER_CONFIG: FooterConfig = {
 
 export const INITIAL_PAGE_CONTENTS: PageContents = {
   home: {
+    // 1. Hero & Badges
     heroBadge: 'பாரம்பரிய தமிழ் சித்த மருத்துவம் • 100% தூய மூலிகை',
     heroTitle: 'Awaken Timeless Herbal Radiance With Sacred Botanicals.',
     heroSubtitle:
       'Slow-infused in traditional bronze urulis with hand-harvested Western Ghats herbs, cold-pressed virgin seed oils, and Grade-1 Kashmiri saffron. Zero sulfates, zero silicones, 100% chemical-free.',
+    heroBtn1: 'Shop Herbal Catalog',
+    heroBtn2: 'Take 30-Sec Dosha Quiz',
+    marqueeText: '🌿 100% Herbal Siddha Formulations • Hand-Harvested Herbs from Pollachi • Bronze Uruli Infusions • Zero Sulfates & Parabens • Free Shipping Above ₹499 • 🌿',
+
+    // 2. Value Proposition (4 USPs)
+    usp1Title: '100% Herbal Siddha',
+    usp1Desc: 'Nil Sulfates, Parabens or Chemicals',
+    usp2Title: 'Bronze Uruli Alchemy',
+    usp2Desc: '72-Hour Traditional Slow-Cooking',
+    usp3Title: 'Free Express Delivery',
+    usp3Desc: 'On all orders above ₹499 in India',
+    usp4Title: 'Lab Batch Certified',
+    usp4Desc: 'Direct From Pollachi Farmstead',
+
+    // 3. Categories Section
+    catEyebrow: 'Ancestral Collections',
     catTitle: 'Shop By Ancestral Ritual',
     catSubtitle: 'Every formula addresses root concerns through handpicked native herbs and stone-ground extracts.',
+
+    // 4. Bestselling Products Section
+    prodEyebrow: 'Community Favorites',
     prodTitle: 'Signature Herbal Formulations',
     prodSubtitle: 'Micro-batched with zero artificial fillers for visible cellular nourishment.',
+    prodBtnText: 'View All Products',
+
+    // 5. Ayurvedic Dosha Quiz Section
+    quizEyebrow: 'Ancestral Diagnostic',
+    quizTitle: 'Discover Your Tailored Siddha Routine',
+    quizSubtitle: 'Take 30 seconds to select your primary focus area. Our herbal experts have mapped traditional botanicals to restore natural equilibrium.',
+    quizMatchTitle: 'Recommended Routine',
+
+    // 6. 4-Stage Artisan Process Section
+    processEyebrow: 'The Artisan Process',
     processTitle: 'From Sacred Ghats to Your Daily Vanity',
     processSubtitle: 'No industrial speed-cuts. Every bottle requires 14 days of traditional Siddha patience.',
+    step1Title: 'Wild Herb Foraging',
+    step1Desc: 'Fresh red hibiscus, karisalankanni, and vetiver roots harvested at dawn from Pollachi foothill groves.',
+    step2Title: 'Cold Wood-Milling',
+    step2Desc: 'Virgin coconut and gingelly oils extracted via slow wooden vaagai chekku mills with zero thermal degradation.',
+    step3Title: 'Bronze Uruli Infusion',
+    step3Desc: 'Botanicals slow-simmered in heirloom heavy bronze vats for 72 hours under constant gentle stirring.',
+    step4Title: 'Lab Batch Certified',
+    step4Desc: 'Independently tested for zero heavy metals, zero microbes, and packaged in dark UV-protective glass bottles.',
+
+    // 7. Frequently Asked Questions (FAQ) Section
+    faqEyebrow: 'Got Questions?',
+    faqTitle: 'Frequently Asked Questions',
+    faq1Q: 'How is Hàrpudha’s hair oil different from regular commercial oils?',
+    faq1A: 'Unlike commercial oils that use 80% liquid paraffin (mineral oil) and artificial fragrance, our oils are prepared using 100% pure cold wood-pressed coconut and sesame base, slow-infused for 72 hours in heavy bronze urulis with fresh red hibiscus flowers, karisalankanni juice, and 18 mountain herbs.',
+    faq2Q: 'Are your products safe for sensitive and acne-prone skin?',
+    faq2A: 'Yes, absolutely. Every formulation is free from parabens, phthalates, synthetic preservatives, and artificial colorants. We use natural herbs like wild turmeric, neem, and pure saffron that soothe skin inflammation naturally.',
+    faq3Q: 'How long does delivery take across India?',
+    faq3A: 'We dispatch all orders within 24 hours of confirmation from our Pollachi apothecary via Delhivery Express or BlueDart. Deliveries to Tamil Nadu take 1-2 days; metro cities across India take 2-4 business days.',
+    faq4Q: 'Can men and teenagers use these Siddha formulations?',
+    faq4A: 'Yes! Traditional Siddha formulations are unisex and suitable for all age groups (above 3 years). Both men and women benefit equally from our hair oils, ubtans, and skin remedies.',
   },
   about: {
     title: 'Our Traditional Herbal Heritage',

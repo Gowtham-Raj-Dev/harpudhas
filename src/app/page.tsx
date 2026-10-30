@@ -102,20 +102,20 @@ export default function HomePage() {
 
   const faqs = [
     {
-      q: 'Are Hàrpudha’s products 100% natural and free from chemicals?',
-      a: 'Yes, absolutely. Every formulation is handcrafted strictly following authentic Siddha and Ayurvedic scriptures. We do not use parabens, sulfates, silicones, synthetic fragrances, or mineral oils.',
+      q: pageContents.home.faq1Q || 'How is Hàrpudha’s hair oil different from regular commercial oils?',
+      a: pageContents.home.faq1A || 'Unlike commercial oils that use liquid paraffin and artificial scents, our oils are prepared using 100% pure cold wood-pressed coconut and sesame base, slow-infused for 72 hours in heavy bronze urulis.',
     },
     {
-      q: 'How long before I see results from the Hibiscus & Bhringraj Hair Oil?',
-      a: 'Most customers notice significant reduction in hair fall and improved scalp nourishment within 2 to 3 weeks of regular application (2-3 times weekly with gentle scalp massage).',
+      q: pageContents.home.faq2Q || 'Are your products safe for sensitive and acne-prone skin?',
+      a: pageContents.home.faq2A || 'Yes, absolutely. Every formulation is free from parabens, phthalates, synthetic preservatives, and artificial colorants. We use natural herbs like wild turmeric, neem, and pure saffron.',
     },
     {
-      q: 'What is your delivery timeframe across India?',
-      a: 'Orders are freshly packed within 24 hours at our Pollachi herbal facility. Delivery takes 2-4 business days for South India and 4-6 business days for the rest of India.',
+      q: pageContents.home.faq3Q || 'How long does delivery take across India?',
+      a: pageContents.home.faq3A || 'We dispatch all orders within 24 hours of confirmation from our Pollachi apothecary via Delhivery Express or BlueDart. Deliveries to Tamil Nadu take 1-2 days; other states take 2-4 business days.',
     },
     {
-      q: 'Can I track my order once placed?',
-      a: 'Yes! Once you place an order, you will receive an Order ID (e.g., HARP-7821). You can visit our "Track Order" page anytime to see live updates from Pending -> Confirmed -> Packed -> Shipped -> Delivered.',
+      q: pageContents.home.faq4Q || 'Can men and teenagers use these Siddha formulations?',
+      a: pageContents.home.faq4A || 'Yes! Traditional Siddha formulations are unisex and suitable for all age groups (above 3 years). Both men and women benefit equally from our hair oils, ubtans, and skin remedies.',
     },
   ];
 
@@ -271,32 +271,32 @@ export default function HomePage() {
             <div className="flex items-center justify-center gap-2.5 p-2">
               <Leaf className="w-5 h-5 text-emerald-800 flex-shrink-0" />
               <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">100% Herbal Siddha</h4>
-                <p className="text-[11px] text-gray-500">Nil Sulfates, Parabens or Chemicals</p>
+                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp1Title || '100% Herbal Siddha'}</h4>
+                <p className="text-[11px] text-gray-500">{pageContents.home.usp1Desc || 'Nil Sulfates, Parabens or Chemicals'}</p>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-2.5 p-2">
               <Award className="w-5 h-5 text-amber-700 flex-shrink-0" />
               <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">Bronze Uruli Alchemy</h4>
-                <p className="text-[11px] text-gray-500">72-Hour Traditional Slow-Cooking</p>
+                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp2Title || 'Bronze Uruli Alchemy'}</h4>
+                <p className="text-[11px] text-gray-500">{pageContents.home.usp2Desc || '72-Hour Traditional Slow-Cooking'}</p>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-2.5 p-2">
               <Truck className="w-5 h-5 text-emerald-800 flex-shrink-0" />
               <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">Free Express Delivery</h4>
-                <p className="text-[11px] text-gray-500">On all orders above ₹499 in India</p>
+                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp3Title || 'Free Express Delivery'}</h4>
+                <p className="text-[11px] text-gray-500">{pageContents.home.usp3Desc || 'On all orders above ₹499 in India'}</p>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-2.5 p-2">
               <ShieldCheck className="w-5 h-5 text-amber-700 flex-shrink-0" />
               <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">Lab Batch Certified</h4>
-                <p className="text-[11px] text-gray-500">Direct From Pollachi Farmstead</p>
+                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp4Title || 'Lab Batch Certified'}</h4>
+                <p className="text-[11px] text-gray-500">{pageContents.home.usp4Desc || 'Direct From Pollachi Farmstead'}</p>
               </div>
             </div>
           </div>
@@ -307,7 +307,7 @@ export default function HomePage() {
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-            Ancestral Collections
+            {pageContents.home.catEyebrow || 'Ancestral Collections'}
           </span>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
             {pageContents.home.catTitle}
@@ -362,7 +362,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
             <div>
               <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-                Community Favorites
+                {pageContents.home.prodEyebrow || 'Community Favorites'}
               </span>
               <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
                 {pageContents.home.prodTitle}
@@ -375,7 +375,7 @@ export default function HomePage() {
               href="/shop"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-botanical-800 text-botanical-900 text-xs font-bold uppercase tracking-wider hover:bg-botanical-800 hover:text-white transition-colors"
             >
-              <span>View All ({products.length}) Products</span>
+              <span>{pageContents.home.prodBtnText || 'View All'} ({products.length}) Products</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -496,15 +496,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-5">
               <span className="text-xs uppercase tracking-widest text-sandal-400 font-bold">
-                Ancestral Diagnostic
+                {pageContents.home.quizEyebrow || 'Ancestral Diagnostic'}
               </span>
               <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
-                Discover Your Tailored <br />
-                <span className="text-sandal-300 italic">Siddha Routine</span>
+                {pageContents.home.quizTitle || 'Discover Your Tailored Siddha Routine'}
               </h2>
               <p className="text-sm text-sandal-200/80 leading-relaxed">
-                Take 30 seconds to select your primary focus area. Our herbal experts have mapped traditional
-                botanicals to restore natural equilibrium.
+                {pageContents.home.quizSubtitle || 'Take 30 seconds to select your primary focus area. Our herbal experts have mapped traditional botanicals to restore natural equilibrium.'}
               </p>
 
               <div className="space-y-2 pt-2">
@@ -595,7 +593,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <span className="text-xs font-semibold text-emerald-400">Match Found</span>
-                  <h3 className="text-xl font-serif font-bold text-white">Recommended Routine</h3>
+                  <h3 className="text-xl font-serif font-bold text-white">{pageContents.home.quizMatchTitle || 'Recommended Routine'}</h3>
                 </div>
                 <span className="text-xs bg-sandal-500/20 text-sandal-300 px-3 py-1 rounded-full font-medium border border-sandal-400/30">
                   {quizArea}
@@ -651,7 +649,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-              The Artisan Process
+              {pageContents.home.processEyebrow || 'The Artisan Process'}
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
               {pageContents.home.processTitle}
@@ -666,9 +664,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 1
               </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">Wild Herb Foraging</h3>
+              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step1Title || 'Wild Herb Foraging'}</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Fresh red hibiscus, karisalankanni, and vetiver roots harvested at dawn from Pollachi foothill groves.
+                {pageContents.home.step1Desc || 'Fresh red hibiscus, karisalankanni, and vetiver roots harvested at dawn from Pollachi foothill groves.'}
               </p>
             </div>
 
@@ -676,9 +674,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 2
               </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">Cold Wood-Milling</h3>
+              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step2Title || 'Cold Wood-Milling'}</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Virgin coconut and gingelly oils extracted via slow wooden vaagai chekku mills with zero thermal degradation.
+                {pageContents.home.step2Desc || 'Virgin coconut and gingelly oils extracted via slow wooden vaagai chekku mills with zero thermal degradation.'}
               </p>
             </div>
 
@@ -686,9 +684,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 3
               </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">Bronze Uruli Infusion</h3>
+              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step3Title || 'Bronze Uruli Infusion'}</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Botanicals slow-simmered in heirloom heavy bronze vats for 72 hours under constant gentle stirring.
+                {pageContents.home.step3Desc || 'Botanicals slow-simmered in heirloom heavy bronze vats for 72 hours under constant gentle stirring.'}
               </p>
             </div>
 
@@ -696,9 +694,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 4
               </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">Lab Batch Certified</h3>
+              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step4Title || 'Lab Batch Certified'}</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Independently tested for zero heavy metals, zero microbes, and packaged in dark UV-protective glass bottles.
+                {pageContents.home.step4Desc || 'Independently tested for zero heavy metals, zero microbes, and packaged in dark UV-protective glass bottles.'}
               </p>
             </div>
           </div>
@@ -709,10 +707,10 @@ export default function HomePage() {
       <section className="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-            Got Questions?
+            {pageContents.home.faqEyebrow || 'Got Questions?'}
           </span>
           <h2 className="text-3xl font-serif font-bold text-botanical-900 mt-1">
-            Frequently Asked Questions
+            {pageContents.home.faqTitle || 'Frequently Asked Questions'}
           </h2>
         </div>
 

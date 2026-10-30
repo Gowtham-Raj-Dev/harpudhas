@@ -152,7 +152,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (storedFooter) setFooterConfig(JSON.parse(storedFooter));
 
       const storedPages = localStorage.getItem(STORAGE_KEYS.PAGE_CONTENTS);
-      if (storedPages) setPageContents(JSON.parse(storedPages));
+      if (storedPages) {
+        try {
+          const parsed = JSON.parse(storedPages);
+          setPageContents({
+            ...INITIAL_PAGE_CONTENTS,
+            ...parsed,
+            home: { ...INITIAL_PAGE_CONTENTS.home, ...(parsed.home || {}) },
+            about: { ...INITIAL_PAGE_CONTENTS.about, ...(parsed.about || {}) },
+            contact: { ...INITIAL_PAGE_CONTENTS.contact, ...(parsed.contact || {}) },
+            shop: { ...INITIAL_PAGE_CONTENTS.shop, ...(parsed.shop || {}) },
+          });
+        } catch {
+          // fallback
+        }
+      }
 
       const storedCart = localStorage.getItem(STORAGE_KEYS.CART);
       if (storedCart) setCart(JSON.parse(storedCart));
