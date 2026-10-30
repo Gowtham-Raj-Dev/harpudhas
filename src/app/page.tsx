@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
@@ -38,8 +38,8 @@ const SectionHeading: React.FC<{ eyebrow?: string; title: string; subtitle?: str
         {align === 'center' && <span className={`h-px w-6 ${dark ? 'bg-sandal-400/60' : 'bg-sandal-500/60'}`} />}
       </span>
     )}
-    <h2 className={`mt-3 text-3xl sm:text-[42px] leading-[1.1] font-serif font-semibold ${dark ? 'text-white' : 'text-botanical-900'}`}>{title}</h2>
-    {subtitle && <p className={`mt-3 text-[15px] leading-relaxed ${dark ? 'text-sandal-100/75' : 'text-gray-600'}`}>{subtitle}</p>}
+    <h2 className={`mt-2 sm:mt-3 text-[28px] sm:text-[42px] leading-[1.1] font-serif font-semibold ${dark ? 'text-white' : 'text-botanical-900'}`}>{title}</h2>
+    {subtitle && <p className={`mt-2 sm:mt-3 text-sm sm:text-[15px] leading-relaxed ${dark ? 'text-sandal-100/75' : 'text-gray-600'}`}>{subtitle}</p>}
   </div>
 );
 
@@ -61,6 +61,7 @@ export default function HomePage() {
     if (currentSlide >= activeBanners.length) setCurrentSlide(0);
   }, [activeBanners.length, currentSlide]);
 
+  const touchX = useRef<number | null>(null);
   const go = (dir: 1 | -1) =>
     activeBanners.length && setCurrentSlide((prev) => (prev + dir + activeBanners.length) % activeBanners.length);
 
@@ -114,7 +115,7 @@ export default function HomePage() {
       {show.homeHero && (
         <section className="relative w-full bg-botanical-900 overflow-hidden">
           {activeBanners.length === 0 ? (
-            <div className="relative min-h-[560px] lg:min-h-[640px] flex items-center">
+            <div className="relative min-h-[480px] sm:min-h-[560px] lg:min-h-[640px] flex items-center">
               <Image src={withBasePath('/images/hero-banner.jpg')} alt="Hàrpudha's" fill priority className="object-cover opacity-40" />
               <div className="absolute inset-0 bg-gradient-to-r from-botanical-950 via-botanical-900/80 to-transparent" />
               <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
@@ -122,15 +123,15 @@ export default function HomePage() {
                   <span className="inline-block px-4 py-1.5 rounded-full text-xs tracking-wide bg-white/10 text-sandal-200 border border-white/15 backdrop-blur">
                     {home.heroBadge}
                   </span>
-                  <h1 className="text-4xl sm:text-6xl font-serif font-semibold leading-[1.05]">{home.heroTitle}</h1>
+                  <h1 className="text-[32px] sm:text-6xl font-serif font-semibold leading-[1.05]">{home.heroTitle}</h1>
                   <p className="text-base sm:text-lg text-sandal-100/80 leading-relaxed">{home.heroSubtitle}</p>
                   <div className="flex flex-wrap gap-3 pt-2">
-                    <Link href="/shop" className="btn-shimmer inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300">
+                    <Link href="/shop" className="btn-shimmer inline-flex items-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300">
                       <ShoppingBag className="w-4 h-4" />
                       {home.heroBtn1}
                     </Link>
                     {show.homeQuiz && (
-                      <a href="#routine-finder" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10">
+                      <a href="#routine-finder" className="inline-flex items-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10">
                         {home.heroBtn2}
                       </a>
                     )}
@@ -139,7 +140,16 @@ export default function HomePage() {
               </div>
             </div>
           ) : (
-            <div className="relative w-full min-h-[560px] lg:min-h-[640px]">
+            <div
+              className="relative w-full min-h-[480px] sm:min-h-[560px] lg:min-h-[640px]"
+              onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+              onTouchEnd={(e) => {
+                if (touchX.current === null) return;
+                const dx = e.changedTouches[0].clientX - touchX.current;
+                if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+                touchX.current = null;
+              }}
+            >
               {activeBanners.map((banner, index) => {
                 const isCurrent = index === currentSlide;
                 return (
@@ -156,7 +166,7 @@ export default function HomePage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-botanical-950/95 via-botanical-950/60 to-botanical-950/10" />
                     <div className="relative z-10 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center">
-                      <div className={`max-w-2xl space-y-6 text-white py-20 transition-all duration-700 ${isCurrent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                      <div className={`max-w-2xl space-y-4 sm:space-y-6 text-white pt-12 pb-20 sm:py-20 transition-all duration-700 ${isCurrent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                         <div className="flex flex-wrap items-center gap-2">
                           {banner.badge && (
                             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] bg-sandal-500 text-botanical-950">
@@ -171,18 +181,18 @@ export default function HomePage() {
                             </span>
                           )}
                         </div>
-                        <h2 className="text-4xl sm:text-6xl font-serif font-semibold leading-[1.05] tracking-tight">{banner.title}</h2>
-                        <p className="text-base sm:text-lg text-sandal-100/80 leading-relaxed max-w-xl">{banner.subtitle}</p>
+                        <h2 className="text-[32px] sm:text-6xl font-serif font-semibold leading-[1.05] tracking-tight">{banner.title}</h2>
+                        <p className="text-[15px] sm:text-lg text-sandal-100/80 leading-relaxed max-w-xl line-clamp-3 sm:line-clamp-none">{banner.subtitle}</p>
                         <div className="pt-2 flex flex-wrap items-center gap-3">
                           <Link
                             href={banner.buttonLink || '/shop'}
-                            className="btn-shimmer group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300 transition-colors"
+                            className="btn-shimmer group inline-flex items-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300 transition-colors"
                           >
                             {banner.buttonText || 'Shop Collection'}
                             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                           </Link>
                           {show.homeQuiz && (
-                            <a href="#routine-finder" className="px-7 py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10 backdrop-blur">
+                            <a href="#routine-finder" className="px-5 sm:px-7 py-3 sm:py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10 backdrop-blur">
                               {home.heroBtn2}
                             </a>
                           )}
@@ -194,7 +204,7 @@ export default function HomePage() {
               })}
 
               {activeBanners.length > 1 && (
-                <div className="absolute bottom-8 inset-x-0 z-20">
+                <div className="absolute bottom-5 sm:bottom-8 inset-x-0 z-20">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {activeBanners.map((_, idx) => (
@@ -209,7 +219,7 @@ export default function HomePage() {
                         {String(currentSlide + 1).padStart(2, '0')} / {String(activeBanners.length).padStart(2, '0')}
                       </span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="hidden sm:flex gap-2">
                       <button onClick={() => go(-1)} className="w-11 h-11 rounded-full border border-white/25 text-white hover:bg-white/10 flex items-center justify-center" aria-label="Previous">
                         <ChevronLeft className="w-5 h-5" />
                       </button>
@@ -238,9 +248,9 @@ export default function HomePage() {
       {/* 2. USP BAR */}
       {show.homeUsp && (
         <div className="w-full bg-white border-b border-sandal-200/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4 divide-x divide-sandal-200/70">
+          <div className="max-w-7xl mx-auto lg:px-8 scroll-row lg:grid lg:grid-cols-4 divide-x divide-sandal-200/70">
             {usps.map(({ icon: Icon, title, desc }, i) => (
-              <div key={i} className="flex items-center gap-3.5 py-6 px-4">
+              <div key={i} className="flex items-center gap-3 sm:gap-3.5 py-4 sm:py-6 px-4 w-[70%] sm:w-[42%] lg:w-auto">
                 <div className="w-11 h-11 rounded-full bg-sandal-100 text-botanical-800 flex items-center justify-center shrink-0">
                   <Icon className="w-5 h-5" />
                 </div>
@@ -256,13 +266,13 @@ export default function HomePage() {
 
       {/* 3. CATEGORIES */}
       {show.homeCategories && (
-        <section className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading eyebrow={home.catEyebrow} title={home.catTitle} subtitle={home.catSubtitle} />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12">
+          <div className="scroll-row gap-3 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-5 mt-8 sm:mt-12">
             {categories.map((cat) => {
               const count = productsFor(products, 'shop').filter((p) => p.category === cat.cat).length;
               return (
-                <Link key={cat.title} href={cat.href} className="group relative h-[420px] rounded-[28px] overflow-hidden">
+                <Link key={cat.title} href={cat.href} className="group relative w-[74%] sm:w-[46%] md:w-auto h-[300px] md:h-[420px] rounded-3xl md:rounded-[28px] overflow-hidden">
                   <Image src={withBasePath(cat.image)} alt={cat.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-botanical-950/90 via-botanical-950/20 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-7 text-white">
@@ -284,9 +294,9 @@ export default function HomePage() {
 
       {/* 4. BESTSELLERS */}
       {show.homeFeatured && featuredProducts.length > 0 && (
-        <section id="home-featured" className="py-20 sm:py-24 bg-sandal-100/60 border-y border-sandal-200/70 scroll-mt-20">
+        <section id="home-featured" className="py-12 sm:py-24 bg-sandal-100/60 border-y border-sandal-200/70 scroll-mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 mb-7 sm:mb-12">
               <SectionHeading eyebrow={home.prodEyebrow} title={home.prodTitle} subtitle={home.prodSubtitle} align="left" />
               <Link
                 href="/shop"
@@ -296,7 +306,7 @@ export default function HomePage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className={`grid grid-cols-1 gap-6 ${gridCols(hp['home-featured'].columns)}`}>
+            <div className={`grid grid-cols-2 gap-3 sm:gap-6 ${gridCols(hp['home-featured'].columns)}`}>
               {featuredProducts.map((prod) => (
                 <ProductCard key={prod.id} product={prod} />
               ))}
@@ -307,11 +317,13 @@ export default function HomePage() {
 
       {/* 5. NEW ARRIVALS */}
       {show.homeNew && newProducts.length > 0 && (
-        <section id="home-new" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+        <section id="home-new" className="py-12 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
           <SectionHeading eyebrow="Just Launched" title={siteSettings.newSectionTitle} subtitle={siteSettings.newSectionSubtitle} />
-          <div className={`grid grid-cols-1 gap-5 mt-12 ${gridCols(hp['home-new'].columns)}`}>
+          <div className={`scroll-row gap-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:gap-5 mt-8 sm:mt-12 ${gridCols(hp['home-new'].columns)}`}>
             {newProducts.map((prod) => (
-              <ProductCard key={prod.id} product={prod} />
+              <div key={prod.id} className="w-[46%] sm:w-auto">
+                <ProductCard product={prod} />
+              </div>
             ))}
           </div>
         </section>
@@ -319,7 +331,7 @@ export default function HomePage() {
 
       {/* 6. ROUTINE FINDER */}
       {show.homeQuiz && (
-        <section id="routine-finder" className="relative py-20 sm:py-24 bg-botanical-900 text-white overflow-hidden scroll-mt-20">
+        <section id="routine-finder" className="relative py-12 sm:py-24 bg-botanical-900 text-white overflow-hidden scroll-mt-20">
           <div className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full bg-sandal-500/10 blur-3xl pointer-events-none" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-8">
@@ -408,12 +420,12 @@ export default function HomePage() {
 
       {/* 7. PROCESS */}
       {show.homeProcess && (
-        <section className="py-20 sm:py-24 bg-sandal-50">
+        <section className="py-12 sm:py-24 bg-sandal-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeading eyebrow={home.processEyebrow} title={home.processTitle} subtitle={home.processSubtitle} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
+            <div className="scroll-row gap-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-5 mt-8 sm:mt-14">
               {steps.map((s, i) => (
-                <div key={i} className="relative p-7 rounded-[24px] bg-white border border-sandal-200/80">
+                <div key={i} className="relative p-6 sm:p-7 w-[78%] sm:w-auto rounded-[24px] bg-white border border-sandal-200/80">
                   <span className="font-serif text-5xl font-semibold text-sandal-300">{String(i + 1).padStart(2, '0')}</span>
                   <h3 className="mt-4 font-serif text-xl font-semibold text-botanical-900">{s.title}</h3>
                   <p className="mt-2 text-sm text-gray-600 leading-relaxed">{s.desc}</p>
@@ -426,14 +438,14 @@ export default function HomePage() {
 
       {/* 8. FAQ */}
       {show.homeFaq && faqs.length > 0 && (
-        <section className="py-20 sm:py-24 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 sm:py-24 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading eyebrow={home.faqEyebrow} title={home.faqTitle} />
           <div className="mt-12 divide-y divide-sandal-200 border-y border-sandal-200">
             {faqs.map((faq, i) => (
               <div key={i}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full py-5 text-left flex items-center justify-between gap-6 font-serif text-lg font-semibold text-botanical-900"
+                  className="w-full py-4 sm:py-5 text-left flex items-center justify-between gap-4 sm:gap-6 font-serif text-base sm:text-lg font-semibold text-botanical-900"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown className={`w-5 h-5 shrink-0 text-sandal-600 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />

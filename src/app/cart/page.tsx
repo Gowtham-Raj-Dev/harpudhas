@@ -54,7 +54,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-sandal-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-sandal-50 pt-5 pb-24 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-sandal-200 mb-8 gap-4">
@@ -318,7 +318,7 @@ export default function CartPage() {
         {upsell.length > 0 && (
           <div className="mt-16">
             <h3 className="text-2xl font-serif font-semibold text-botanical-900 mb-6">You may also like</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               {upsell.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -326,6 +326,21 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Phones: sticky checkout bar above the tab bar */}
+      {cart.length > 0 && (
+        <div className="lg:hidden fixed bottom-16 inset-x-0 z-30 mb-[env(safe-area-inset-bottom)] bg-white/95 backdrop-blur-xl border-t border-sandal-200">
+          <div className="flex items-center gap-3 px-4 py-2.5">
+            <div>
+              <p className="text-[11px] text-gray-500">{cart.reduce((s, c) => s + c.qty, 0)} items · {cartTotals.shipping ? `+₹${cartTotals.shipping} delivery` : 'Free delivery'}</p>
+              <p className="text-lg font-bold text-botanical-900 leading-tight">₹{cartTotals.total}</p>
+            </div>
+            <Link href="/checkout" className="flex-1 h-11 rounded-full bg-botanical-800 text-white text-sm font-semibold flex items-center justify-center gap-2">
+              Checkout <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

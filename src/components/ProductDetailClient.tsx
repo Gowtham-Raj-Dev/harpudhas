@@ -91,7 +91,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
   };
 
   return (
-    <div className="w-full min-h-screen bg-sandal-50 pb-24">
+    <div className="w-full min-h-screen bg-sandal-50 pb-32 sm:pb-24">
       {/* Target Banner for Product Page */}
       <BannerDisplay page="product" />
 
@@ -116,7 +116,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
 
       {/* Main Product Showcase */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-sandal-200 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-10 border border-sandal-200 shadow-sm">
           {/* Left: Product Image */}
           <div className="lg:col-span-6 space-y-4">
             <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-sandal-50 border border-sandal-200/80 shadow-md">
@@ -161,7 +161,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
           </div>
 
           {/* Right: Product Info & Actions */}
-          <div className="lg:col-span-6 space-y-6 flex flex-col justify-between">
+          <div className="lg:col-span-6 space-y-6 flex flex-col justify-between px-1 sm:px-0">
             <div className="space-y-4">
               <div className="space-y-1">
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-800">
@@ -194,8 +194,8 @@ export default function ProductDetailClient({ productId }: { productId: string }
               {/* Price & Savings */}
               <div className="p-4 rounded-2xl bg-sandal-50 border border-sandal-200 flex items-center justify-between">
                 <div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-serif font-bold text-botanical-900">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-[28px] sm:text-3xl font-serif font-bold text-botanical-900">
                       ₹{selectedSize.price}
                     </span>
                     <span className="text-base text-gray-400 line-through">
@@ -275,8 +275,8 @@ export default function ProductDetailClient({ productId }: { productId: string }
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {/* Action Buttons (phones use the sticky bar instead) */}
+              <div className="hidden sm:grid grid-cols-2 gap-3 pt-2">
                 <button
                   disabled={soldOut}
                   onClick={() => addToCart(product.id, selectedSizeIndex, qty)}
@@ -330,7 +330,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
         </div>
 
         {/* Tabbed Product Details */}
-        <div className="mt-12 bg-white rounded-3xl p-6 sm:p-10 border border-sandal-200 shadow-sm">
+        <div className="mt-6 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-sandal-200 shadow-sm">
           <div className="flex border-b border-sandal-200 gap-8 overflow-x-auto pb-2">
             {[
               { id: 'desc', label: 'Herbal Overview' },
@@ -464,16 +464,16 @@ export default function ProductDetailClient({ productId }: { productId: string }
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-16">
-            <h3 className="text-2xl font-serif font-bold text-botanical-900 mb-6">
+          <div className="mt-10 sm:mt-16">
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-botanical-900 mb-4 sm:mb-6">
               Complementary {product.category} Formulations
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="scroll-row gap-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-6">
               {relatedProducts.map((rel) => (
                 <Link
                   key={rel.id}
                   href={productHref(rel.id)}
-                  className="group bg-white rounded-2xl border border-sandal-200 p-4 shadow-xs hover:shadow-md transition-all flex items-center gap-4"
+                  className="group w-[80%] sm:w-auto bg-white rounded-2xl border border-sandal-200 p-4 shadow-xs hover:shadow-md transition-all flex items-center gap-4"
                 >
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-sandal-50 flex-shrink-0">
                     <Image
@@ -497,6 +497,31 @@ export default function ProductDetailClient({ productId }: { productId: string }
             </div>
           </div>
         )}
+      </div>
+
+      {/* Phones: sticky buy bar */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-sandal-200 shadow-[0_-8px_24px_-12px_rgb(var(--botanical-900)/0.2)] pb-safe">
+        <div className="flex items-center gap-2 px-4 py-3">
+          <div className="min-w-0 mr-1">
+            <p className="text-[11px] text-gray-500 truncate">{selectedSize.label}</p>
+            <p className="text-lg font-bold text-botanical-900 leading-tight">₹{selectedSize.price * qty}</p>
+          </div>
+          <button
+            disabled={soldOut}
+            onClick={() => addToCart(product.id, selectedSizeIndex, qty)}
+            className="flex-1 h-12 rounded-full border-2 border-botanical-800 text-botanical-900 text-sm font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] disabled:opacity-40"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            Add
+          </button>
+          <button
+            disabled={soldOut}
+            onClick={handleBuyNow}
+            className="flex-1 h-12 rounded-full bg-botanical-800 text-white text-sm font-semibold active:scale-[0.98] disabled:opacity-40"
+          >
+            {soldOut ? 'Sold out' : 'Buy now'}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -243,13 +243,13 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-sandal-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-sandal-50 pt-5 pb-32 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="pb-6 border-b border-sandal-200 mb-8">
-          <span className="text-xs font-semibold uppercase tracking-widest text-botanical-700">
+        <div className="pb-4 sm:pb-6 border-b border-sandal-200 mb-5 sm:mb-8">
+          <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-botanical-700">
             Secure Indian Checkout
           </span>
-          <h1 className="text-3xl font-serif font-bold text-botanical-900 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-botanical-900 mt-1">
             Delivery & Payment Information
           </h1>
         </div>
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
           {/* Left Form: Delivery Address & Details */}
           <div className="lg:col-span-7 space-y-6">
             {/* Contact Details */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sandal-200 shadow-xs space-y-4">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-sandal-200 shadow-xs space-y-4">
               <h3 className="font-serif font-bold text-lg text-botanical-900">
                 1. Customer & Contact Details
               </h3>
@@ -274,7 +274,7 @@ export default function CheckoutPage() {
                     placeholder="e.g. Gowtham Raj"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
                 </div>
 
@@ -288,7 +288,7 @@ export default function CheckoutPage() {
                     placeholder="10-digit Mobile Number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
                   <p className="text-[11px] text-gray-400 mt-1">We save these details so our team can help you complete your order on WhatsApp.</p>
                 </div>
@@ -303,13 +303,13 @@ export default function CheckoutPage() {
                   placeholder="yourname@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                  className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                 />
               </div>
             </div>
 
             {/* Shipping Address */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sandal-200 shadow-xs space-y-4">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-sandal-200 shadow-xs space-y-4">
               <h3 className="font-serif font-bold text-lg text-botanical-900">
                 2. Shipping Address
               </h3>
@@ -324,7 +324,7 @@ export default function CheckoutPage() {
                   placeholder="e.g. No. 12, 4th Cross, Gandhi Street"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                  className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                 />
               </div>
 
@@ -338,7 +338,7 @@ export default function CheckoutPage() {
                     placeholder="Near Bus Stand / Temple"
                     value={landmark}
                     onChange={(e) => setLandmark(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
                 </div>
 
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                     placeholder="e.g. Chennai / Coimbatore"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function CheckoutPage() {
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700 bg-white"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700 bg-white"
                   >
                     <option value="Tamil Nadu">Tamil Nadu</option>
                     <option value="Karnataka">Karnataka</option>
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                     placeholder="6-digit PIN"
                     value={pincode}
                     onChange={(e) => setPincode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                    className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
                 </div>
               </div>
@@ -403,13 +403,13 @@ export default function CheckoutPage() {
                   placeholder="e.g. Leave with security or call before delivery"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
+                  className="w-full px-3.5 py-3 sm:py-2.5 rounded-xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                 />
               </div>
             </div>
 
             {/* Payment Options */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sandal-200 shadow-xs space-y-4">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-sandal-200 shadow-xs space-y-4">
               <h3 className="font-serif font-bold text-lg text-botanical-900">
                 3. Payment Method
               </h3>
@@ -500,7 +500,7 @@ export default function CheckoutPage() {
 
           {/* Right Summary: Items & Place Order Button */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-sandal-200 shadow-xs space-y-4 sticky top-28">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-sandal-200 shadow-xs space-y-4 sticky top-28">
               <h3 className="font-serif font-bold text-lg text-botanical-900 pb-3 border-b border-sandal-100">
                 Order Review ({cart.reduce((s, i) => s + i.qty, 0)} Items)
               </h3>
@@ -591,6 +591,24 @@ export default function CheckoutPage() {
                 <ShieldCheck className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                 <span>Immediate notification will be sent to the Store Admin</span>
               </div>
+            </div>
+          </div>
+
+          {/* Phones: sticky total + place order */}
+          <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-sandal-200 shadow-[0_-8px_24px_-12px_rgb(var(--botanical-900)/0.2)] pb-safe">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div>
+                <p className="text-[11px] text-gray-500">Total · {cart.reduce((s, c) => s + c.qty, 0)} items</p>
+                <p className="text-lg font-bold text-botanical-900 leading-tight">₹{cartTotals.total}</p>
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 h-12 rounded-full bg-botanical-800 text-white text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
+              >
+                {isSubmitting ? 'Placing order…' : 'Place order'}
+                {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+              </button>
             </div>
           </div>
         </form>

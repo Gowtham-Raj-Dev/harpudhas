@@ -31,6 +31,22 @@ export const Header: React.FC = () => {
 
   useEffect(() => setMobileMenuOpen(false), [pathname]);
 
+  // Opened from the phone tab bar
+  useEffect(() => {
+    const s = () => setShowSearchModal(true);
+    const a = () => setShowAccount(true);
+    window.addEventListener('harpudhas:open-search', s);
+    window.addEventListener('harpudhas:open-account', a);
+    return () => {
+      window.removeEventListener('harpudhas:open-search', s);
+      window.removeEventListener('harpudhas:open-account', a);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+  }, [mobileMenuOpen]);
+
   const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'Shop All', href: '/shop' },
@@ -64,9 +80,16 @@ export const Header: React.FC = () => {
   return (
     <>
       {showAnnouncement && (
-        <div className="w-full bg-botanical-900 text-sandal-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between gap-4 text-[11px] sm:text-xs">
-            <p className="flex-1 truncate text-center sm:text-left tracking-wide">{headerConfig.announcementText}</p>
+        <div className="w-full bg-botanical-900 text-sandal-100 overflow-hidden">
+          {/* Phones: scrolling ticker so the full message is readable */}
+          <div className="md:hidden h-8 flex items-center">
+            <div className="marquee-track text-[11px] tracking-wide whitespace-nowrap">
+              <span className="px-6">{headerConfig.announcementText}</span>
+              <span className="px-6">{headerConfig.announcementText}</span>
+            </div>
+          </div>
+          <div className="hidden md:flex max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 items-center justify-between gap-4 text-xs">
+            <p className="flex-1 truncate tracking-wide">{headerConfig.announcementText}</p>
             {headerConfig.phone && (
               <a href={`tel:${headerConfig.phone.replace(/\s/g, '')}`} className="hidden md:flex items-center gap-1.5 text-sandal-300 hover:text-white">
                 <Phone className="w-3 h-3" />
@@ -82,16 +105,63 @@ export const Header: React.FC = () => {
           scrolled ? 'bg-sandal-50/90 backdrop-blur-xl shadow-[0_1px_0_rgba(200,157,84,0.25),0_8px_24px_-12px_rgba(19,42,31,0.15)]' : 'bg-sandal-50 border-b border-sandal-200/70'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`flex items-center justify-between gap-4 transition-all ${scrolled ? 'h-16' : 'h-20'}`}>
+        {/* ---------- Phone header ---------- */}
+        <div className="lg:hidden">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center h-14 px-2">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 -ml-2 rounded-xl text-botanical-900 hover:bg-sandal-100"
-              aria-label="Toggle menu"
+              onClick={() => setMobileMenuOpen(true)}
+              className="justify-self-start w-10 h-10 rounded-full flex items-center justify-center text-botanical-900 active:bg-sandal-100"
+              aria-label="Open menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <Menu className="w-[22px] h-[22px]" />
             </button>
+            <Link href="/" className="flex items-center gap-2" aria-label="Hàrpudha's Home">
+              <span className="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-sandal-500/50 bg-black">
+                <Image src={withBasePath('/images/logo.png')} alt="" fill className="object-cover" priority />
+              </span>
+              <span className="font-serif text-[19px] font-bold tracking-[0.14em] text-botanical-900 leading-none">{headerConfig.logoTitle}</span>
+            </Link>
+            <div className="justify-self-end flex items-center">
+              <button onClick={() => setShowSearchModal(true)} className="w-10 h-10 rounded-full flex items-center justify-center text-botanical-900 active:bg-sandal-100" aria-label="Search">
+                <Search className="w-5 h-5" />
+              </button>
+              <button onClick={() => setShowCartDrawer(true)} className="relative w-10 h-10 rounded-full flex items-center justify-center text-botanical-900 active:bg-sandal-100" aria-label="Cart">
+                <ShoppingBag className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute top-1 right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-terracotta-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-sandal-50">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+          {/* Swipeable quick links */}
+          <div className={`overflow-hidden transition-all duration-300 ${scrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'}`}>
+            <div className="scroll-row gap-2 px-4 pb-2.5">
+              {[
+                { label: 'All', href: '/shop' },
+                { label: '🌿 Hair Care', href: '/shop?category=Hair Care' },
+                { label: '✨ Face Care', href: '/shop?category=Face Care' },
+                { label: '🛁 Skin & Body', href: '/shop?category=Skin & Body' },
+                { label: 'New arrivals', href: '/#home-new' },
+                { label: 'Track order', href: '/orders' },
+                { label: 'Our story', href: '/about' },
+              ].map((c) => (
+                <Link
+                  key={c.label}
+                  href={c.href}
+                  className="px-3.5 h-8 flex items-center rounded-full border border-sandal-300 bg-white text-[12px] font-medium text-botanical-900 whitespace-nowrap active:bg-sandal-100"
+                >
+                  {c.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
 
+        {/* ---------- Desktop header ---------- */}
+        <div className="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`flex items-center justify-between gap-4 transition-all ${scrolled ? 'h-16' : 'h-20'}`}>
             <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="Hàrpudha's Home">
               <div className={`relative rounded-full overflow-hidden ring-2 ring-sandal-500/50 bg-black transition-all ${scrolled ? 'h-11 w-11' : 'h-14 w-14'}`}>
                 <Image src={withBasePath('/images/logo.png')} alt="Hàrpudha's" fill className="object-cover" priority />
@@ -163,25 +233,98 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-sandal-200 bg-sandal-50 px-4 pt-3 pb-6 space-y-1 animate-fadeIn">
-            {[...navLinks, { label: 'Track Order', href: '/orders' }].map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-botanical-900 hover:bg-sandal-100"
-              >
-                <span>{link.label}</span>
-                <ChevronRight className="w-4 h-4 text-sandal-600" />
-              </Link>
-            ))}
-          </div>
-        )}
       </header>
 
+      {/* ---------- Phone menu drawer ---------- */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-botanical-950/50 backdrop-blur-sm animate-fadeIn" onClick={() => setMobileMenuOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[86%] max-w-sm bg-sandal-50 flex flex-col shadow-2xl animate-slide-right">
+            <div className="flex items-center justify-between px-5 h-16 border-b border-sandal-200">
+              <span className="flex items-center gap-2.5">
+                <span className="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-sandal-500/50 bg-black">
+                  <Image src={withBasePath('/images/logo.png')} alt="" fill className="object-cover" />
+                </span>
+                <span className="font-serif text-lg font-bold tracking-[0.14em] text-botanical-900">{headerConfig.logoTitle}</span>
+              </span>
+              <button onClick={() => setMobileMenuOpen(false)} className="w-9 h-9 rounded-full flex items-center justify-center text-botanical-900 active:bg-sandal-100" aria-label="Close menu">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowAccount(true);
+                }}
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-botanical-900 text-white text-left"
+              >
+                <span className="w-10 h-10 rounded-full bg-sandal-500 text-botanical-950 flex items-center justify-center font-bold">
+                  {signedIn ? currentVisitor!.fullName?.[0]?.toUpperCase() : <User className="w-5 h-5" />}
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-sm font-semibold truncate">{signedIn ? `Hi, ${currentVisitor!.fullName?.split(' ')[0]}` : 'Sign in'}</span>
+                  <span className="block text-xs text-sandal-200/70">{signedIn ? 'My orders & account' : 'Faster checkout & offers'}</span>
+                </span>
+                <ChevronRight className="w-4 h-4 text-sandal-300" />
+              </button>
+
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sandal-700 mb-2.5">Shop by ritual</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Hair', img: '/images/hair-oil.jpg', href: '/shop?category=Hair Care' },
+                    { label: 'Face', img: '/images/face-cream.jpg', href: '/shop?category=Face Care' },
+                    { label: 'Body', img: '/images/body-soap.jpg', href: '/shop?category=Skin & Body' },
+                  ].map((c) => (
+                    <Link key={c.label} href={c.href} className="relative aspect-square rounded-2xl overflow-hidden">
+                      <Image src={withBasePath(c.img)} alt="" fill className="object-cover" />
+                      <span className="absolute inset-0 bg-gradient-to-t from-botanical-950/80 to-transparent" />
+                      <span className="absolute bottom-2 left-2.5 text-white text-xs font-semibold">{c.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <nav className="divide-y divide-sandal-200/70 border-y border-sandal-200/70">
+                {[...navLinks.filter((l) => !['Hair', 'Face', 'Body'].includes(l.label)), { label: 'Track order', href: '/orders' }].map((link) => (
+                  <Link key={link.label} href={link.href} className="flex items-center justify-between py-3.5 text-[15px] font-medium text-botanical-900">
+                    {link.label}
+                    <ChevronRight className="w-4 h-4 text-sandal-500" />
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-5 border-t border-sandal-200 grid grid-cols-2 gap-2 pb-safe">
+              {headerConfig.phone && (
+                <a href={`tel:${headerConfig.phone.replace(/\s/g, '')}`} className="h-11 rounded-xl border border-sandal-300 flex items-center justify-center gap-2 text-sm font-medium text-botanical-900">
+                  <Phone className="w-4 h-4" /> Call us
+                </a>
+              )}
+              {headerConfig.whatsapp && (
+                <a
+                  href={`https://wa.me/${headerConfig.whatsapp.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="h-11 rounded-xl bg-botanical-800 text-white flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  WhatsApp
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {showAccount && (
-        <div className="fixed inset-0 z-50 bg-botanical-950/50 backdrop-blur-sm flex items-start justify-center pt-24 px-4" onClick={() => setShowAccount(false)}>
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 animate-modal-pop" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-botanical-950/50 backdrop-blur-sm flex items-end sm:items-start justify-center sm:pt-24 sm:px-4" onClick={() => setShowAccount(false)}>
+          <div
+            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 pb-safe animate-slide-up sm:animate-modal-pop"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="sm:hidden block w-10 h-1 rounded-full bg-sandal-300 mx-auto -mt-2 mb-4" />
             <div className="flex items-start justify-between mb-5">
               <div>
                 <h3 className="text-2xl font-serif font-semibold text-botanical-900">{signedIn ? `Hi, ${currentVisitor!.fullName?.split(' ')[0]}` : 'Sign in'}</h3>
@@ -229,7 +372,7 @@ export const Header: React.FC = () => {
                   placeholder="Full name"
                   value={acct.fullName}
                   onChange={(e) => setAcct({ ...acct, fullName: e.target.value })}
-                  className="w-full h-12 px-4 rounded-2xl border border-sandal-300 text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
+                  className="w-full h-12 px-4 rounded-2xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
                 />
                 <div className="flex">
                   <span className="h-12 px-3.5 flex items-center rounded-l-2xl border border-r-0 border-sandal-300 bg-sandal-50 text-sm text-gray-500">+91</span>
@@ -240,7 +383,7 @@ export const Header: React.FC = () => {
                     placeholder="Mobile number"
                     value={acct.phone}
                     onChange={(e) => setAcct({ ...acct, phone: e.target.value.replace(/\D/g, '') })}
-                    className="flex-1 min-w-0 h-12 px-4 rounded-r-2xl border border-sandal-300 text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
+                    className="flex-1 min-w-0 h-12 px-4 rounded-r-2xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
                   />
                 </div>
                 <input
@@ -248,7 +391,7 @@ export const Header: React.FC = () => {
                   placeholder="Email (optional)"
                   value={acct.email}
                   onChange={(e) => setAcct({ ...acct, email: e.target.value })}
-                  className="w-full h-12 px-4 rounded-2xl border border-sandal-300 text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
+                  className="w-full h-12 px-4 rounded-2xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
                 />
                 <button
                   type="submit"
@@ -266,10 +409,10 @@ export const Header: React.FC = () => {
 
       {showSearchModal && (
         <div
-          className="fixed inset-0 z-50 bg-botanical-950/50 backdrop-blur-sm flex items-start justify-center pt-24 px-4"
+          className="fixed inset-0 z-50 bg-botanical-950/50 backdrop-blur-sm flex items-start justify-center sm:pt-24 sm:px-4"
           onClick={() => setShowSearchModal(false)}
         >
-          <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full p-6 animate-modal-pop" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-b-3xl sm:rounded-3xl shadow-2xl max-w-xl w-full p-5 sm:p-6 animate-dropdown sm:animate-modal-pop" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-serif font-bold text-botanical-900">Search the apothecary</h3>
               <button onClick={() => setShowSearchModal(false)} className="p-1.5 rounded-full text-gray-400 hover:bg-gray-100">
@@ -283,9 +426,26 @@ export const Header: React.FC = () => {
                 placeholder="Hair oil, kumkumadi, shikakai, neem…"
                 value={quickSearch}
                 onChange={(e) => setQuickSearch(e.target.value)}
-                className="w-full h-12 pl-11 pr-4 rounded-2xl border border-sandal-300 text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
+                className="w-full h-12 pl-11 pr-4 rounded-2xl border border-sandal-300 text-base sm:text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
               />
             </form>
+            {!quickSearch.trim() && (
+              <div className="mt-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-sandal-700 font-semibold mb-2">Popular searches</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Hair oil', 'Kumkumadi', 'Shikakai', 'Neem', 'Saffron', 'Bath powder'].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setQuickSearch(t)}
+                      className="px-3.5 h-8 rounded-full bg-sandal-100 text-[13px] text-botanical-900 active:bg-sandal-200"
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {suggestions.length > 0 && (
               <div className="mt-3 divide-y divide-sandal-100">
                 {suggestions.map((p) => (

@@ -155,25 +155,25 @@ function ShopContent() {
     <div className="w-full min-h-screen bg-sandal-50 pb-24">
       <div className="relative bg-botanical-900 text-white overflow-hidden">
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-sandal-500/10 blur-3xl" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center space-y-3">
-          <span className="text-[11px] uppercase tracking-[0.3em] text-sandal-300 font-semibold">The Apothecary</span>
-          <h1 className="text-4xl sm:text-5xl font-serif font-semibold">{pageContents.shop.title}</h1>
-          <p className="text-[15px] text-sandal-100/75 max-w-xl mx-auto">{pageContents.shop.subtitle}</p>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 sm:py-20 text-center space-y-2 sm:space-y-3">
+          <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-sandal-300 font-semibold">The Apothecary</span>
+          <h1 className="text-[28px] sm:text-5xl font-serif font-semibold leading-tight">{pageContents.shop.title}</h1>
+          <p className="text-[13px] sm:text-[15px] text-sandal-100/75 max-w-xl mx-auto line-clamp-2 sm:line-clamp-none">{pageContents.shop.subtitle}</p>
         </div>
       </div>
 
       <BannerDisplay page="shop" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8">
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center gap-3 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3 mb-3 sm:mb-8">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               placeholder="Search by herb, formula or concern…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 pl-11 pr-10 rounded-xl border border-sandal-300 bg-white text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
+              className="w-full h-11 pl-11 pr-10 rounded-xl border border-sandal-300 bg-white text-base sm:text-sm focus:outline-none focus:ring-4 focus:ring-botanical-700/10 focus:border-botanical-700"
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -181,17 +181,18 @@ function ShopContent() {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setMobileFilterOpen(true)}
-              className="lg:hidden h-11 flex items-center gap-2 px-4 rounded-xl bg-white text-sm font-medium text-botanical-900 border border-sandal-300"
+              className="lg:hidden flex-1 md:flex-none h-11 flex items-center justify-center gap-2 px-4 rounded-xl bg-white text-sm font-medium text-botanical-900 border border-sandal-300"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
+              {hasFilters && <span className="w-2 h-2 rounded-full bg-terracotta-500" />}
             </button>
             <Dropdown
               variant="store"
-              className="w-56"
+              className="flex-1 md:flex-none md:w-56"
               value={sortBy}
               onChange={setSortBy}
               icon={<ArrowUpDown className="w-4 h-4" />}
@@ -207,11 +208,27 @@ function ShopContent() {
           </div>
         </div>
 
+        {/* Phones: swipeable category chips */}
+        <div className="lg:hidden scroll-row gap-2 -mx-4 px-4 mb-4">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setActiveCategory(c)}
+              className={`h-9 px-4 rounded-full text-[13px] font-medium whitespace-nowrap border transition-colors ${
+                activeCategory === c ? 'bg-botanical-800 border-botanical-800 text-white' : 'bg-white border-sandal-300 text-botanical-900'
+              }`}
+            >
+              {c === 'all' ? 'All' : c}
+              <span className="ml-1.5 opacity-60 tabular-nums">{c === 'all' ? catalog.length : catalog.filter((p) => p.category === c).length}</span>
+            </button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="hidden lg:block bg-white p-6 rounded-[22px] border border-sandal-200/80 h-fit sticky top-24">{FilterPanel}</aside>
 
           <div className="lg:col-span-3">
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
               Showing <span className="font-semibold text-botanical-900">{filteredProducts.length}</span> of {catalog.length} formulations
             </p>
             {filteredProducts.length === 0 ? (
@@ -226,7 +243,7 @@ function ShopContent() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
                 {filteredProducts.map((prod) => (
                   <ProductCard key={prod.id} product={prod} />
                 ))}
@@ -239,7 +256,8 @@ function ShopContent() {
       {mobileFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileFilterOpen(false)} />
-          <div className="absolute inset-y-0 right-0 w-full max-w-sm bg-white p-6 overflow-y-auto animate-slide-left">
+          <div className="absolute inset-x-0 bottom-0 max-h-[85vh] rounded-t-3xl bg-white p-6 pb-safe overflow-y-auto animate-slide-up">
+            <span className="block w-10 h-1 rounded-full bg-sandal-300 mx-auto -mt-2 mb-4" />
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-serif text-2xl font-semibold text-botanical-900">Filters</h3>
               <button onClick={() => setMobileFilterOpen(false)} className="p-2 rounded-full hover:bg-sandal-100">

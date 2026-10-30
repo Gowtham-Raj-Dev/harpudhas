@@ -76,6 +76,10 @@ body {
 .animate-dropdown { animation: dropdownIn 0.14s ease-out; transform-origin: top; }
 .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
 .animate-slide-left { animation: slideLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideRight { 0% { transform: translateX(-100%); } 100% { transform: translateX(0); } }
+.animate-slide-right { animation: slideRight 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+.animate-slide-up { animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
 .animate-live { animation: livePulse 1.8s ease-in-out infinite; }
 
 .animate-float-slow {
@@ -130,6 +134,23 @@ body {
 .product-img {
   transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Horizontal swipe rows (mobile carousels). In a layer so responsive
+   utilities like `md:grid` can still switch them to a grid on bigger screens. */
+@layer components {
+  .scroll-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .scroll-row::-webkit-scrollbar { display: none; }
+  .scroll-row > * { scroll-snap-align: start; flex-shrink: 0; }
+}
+
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

@@ -62,7 +62,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'de
   }
 
   return (
-    <div className="group card-zoom relative flex flex-col bg-white rounded-[22px] border border-sandal-200/80 overflow-hidden">
+    <div className="group card-zoom relative flex flex-col h-full bg-white rounded-2xl sm:rounded-[22px] border border-sandal-200/80 overflow-hidden">
       {/* Image */}
       <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-b from-sandal-50 to-sandal-100">
         <MaybeLink href={href} preview={preview} className="absolute inset-0">
@@ -75,14 +75,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'de
           />
         </MaybeLink>
 
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-1.5 pointer-events-none max-w-[70%]">
           {product.badge && (
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.12em] bg-white/95 text-botanical-900 shadow-sm backdrop-blur">
+            <span className="w-fit max-w-full truncate px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.1em] bg-white/95 text-botanical-900 shadow-sm backdrop-blur">
               {product.badge}
             </span>
           )}
           {off > 0 && !soldOut && (
-            <span className="w-fit px-2.5 py-1 rounded-full text-[10px] font-bold bg-terracotta-500 text-white shadow-sm">
+            <span className="w-fit px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold bg-terracotta-500 text-white shadow-sm">
               {off}% OFF
             </span>
           )}
@@ -93,13 +93,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'de
           disabled={preview}
           onClick={() => toggleWishlist(product.id)}
           aria-label="Save to wishlist"
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 backdrop-blur flex items-center justify-center text-botanical-800 shadow-sm hover:scale-110 transition-transform"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 backdrop-blur flex items-center justify-center text-botanical-800 shadow-sm hover:scale-110 transition-transform"
         >
           <Heart className={`w-4 h-4 ${wished ? 'fill-rose-500 text-rose-500' : ''}`} />
         </button>
 
         {soldOut && (
-          <div className="absolute inset-x-3 bottom-3 py-2 rounded-xl bg-botanical-900/85 text-center text-[11px] font-semibold uppercase tracking-widest text-sandal-100">
+          <div className="absolute inset-x-2 bottom-2 sm:inset-x-3 sm:bottom-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-botanical-900/85 text-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-sandal-100">
             Out of stock
           </div>
         )}
@@ -120,27 +120,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'de
       </div>
 
       {/* Body */}
-      <div className="flex-1 flex flex-col p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-2 mb-1.5">
-          <span className="text-[10px] uppercase tracking-[0.16em] text-sandal-700 font-semibold truncate">
-            {product.category} · {product.format}
+      <div className="flex-1 flex flex-col p-3 sm:p-5">
+        <div className="flex items-center justify-between gap-2 mb-1 sm:mb-1.5">
+          <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] text-sandal-700 font-semibold truncate">
+            {product.category}
+            <span className="hidden sm:inline"> · {product.format}</span>
           </span>
-          <span className="flex items-center gap-1 text-[11px] font-semibold text-botanical-900 shrink-0">
+          <span className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[11px] font-semibold text-botanical-900 shrink-0">
             <Star className="w-3 h-3 fill-sandal-500 text-sandal-500" />
             {product.rating.toFixed(1)}
-            <span className="text-gray-400 font-normal">({product.reviews})</span>
+            <span className="hidden sm:inline text-gray-400 font-normal">({product.reviews})</span>
           </span>
         </div>
 
         <MaybeLink href={href} preview={preview}>
-          <h3 className="font-serif text-[19px] leading-snug font-semibold text-botanical-900 line-clamp-2 hover:text-botanical-600 transition-colors">
+          <h3 className="font-serif text-[15px] sm:text-[19px] leading-snug font-semibold text-botanical-900 line-clamp-2 hover:text-botanical-600 transition-colors">
             {product.name}
           </h3>
         </MaybeLink>
-        <p className="text-[11px] text-emerald-800/80 mt-1 line-clamp-1">{product.tamilName}</p>
+        <p className="hidden sm:block text-[11px] text-emerald-800/80 mt-1 line-clamp-1">{product.tamilName}</p>
 
         {product.sizeOptions.length > 1 && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
+          <div className="hidden sm:flex flex-wrap gap-1.5 mt-3">
             {product.sizeOptions.map((opt, i) => (
               <button
                 key={opt.label}
@@ -158,17 +159,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'de
           </div>
         )}
 
-        <div className="mt-auto pt-4 flex items-end justify-between gap-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-botanical-900">₹{price}</span>
-            {product.mrp > price && <span className="text-xs text-gray-400 line-through">₹{product.mrp}</span>}
+        <div className="mt-auto pt-2.5 sm:pt-4 flex items-end justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+              <span className="text-[15px] sm:text-lg font-bold text-botanical-900">₹{price}</span>
+              {product.mrp > price && <span className="text-[11px] sm:text-xs text-gray-400 line-through">₹{product.mrp}</span>}
+            </div>
+            {product.sizeOptions.length > 1 && <p className="sm:hidden text-[10px] text-gray-500">{product.sizeOptions.length} sizes</p>}
           </div>
           <button
             type="button"
             disabled={soldOut || preview}
             onClick={() => addToCart(product.id, sizeIdx, 1)}
             aria-label="Add to cart"
-            className="sm:hidden w-10 h-10 rounded-full bg-botanical-800 text-white flex items-center justify-center disabled:opacity-40"
+            className="sm:hidden shrink-0 w-9 h-9 rounded-full bg-botanical-800 text-white flex items-center justify-center active:scale-95 transition-transform disabled:opacity-40"
           >
             <ShoppingBag className="w-4 h-4" />
           </button>
