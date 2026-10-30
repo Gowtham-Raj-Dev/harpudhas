@@ -91,13 +91,12 @@ export interface OfferBanner {
   id: string;
   title: string;
   subtitle: string;
-  badge: string;
+  badge?: string;
   discountCode?: string;
   buttonText: string;
   buttonLink: string;
-  bgGradient: string;
-  textColor?: string;
-  bgImage?: string;
+  imageUrl?: string;
+  bgGradient?: string;
   targetPage: BannerTargetPage;
   isActive: boolean;
 }
@@ -122,4 +121,34 @@ export interface FooterConfig {
   facebook: string;
   youtube: string;
   copyrightText: string;
+}
+
+export interface PageContents {
+  home: {
+    heroBadge: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    catTitle: string;
+    catSubtitle: string;
+    prodTitle: string;
+    prodSubtitle: string;
+    processTitle: string;
+    processSubtitle: string;
+  };
+  about: {
+    title: string;
+    subtitle: string;
+    storyTitle: string;
+    storyText1: string;
+    storyText2: string;
+  };
+  contact: {
+    title: string;
+    subtitle: string;
+    hours: string;
+  };
+  shop: {
+    title: string;
+    subtitle: string;
+  };
 }

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 function ShopContent() {
-  const { products, addToCart, wishlist, toggleWishlist } = useStore();
+  const { products, addToCart, wishlist, toggleWishlist, pageContents } = useStore();
   const searchParams = useSearchParams();
 
   // URL query params
@@ -84,10 +84,10 @@ function ShopContent() {
             Ancestral Siddha Apothecary
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight">
-            All Herbal Formulations
+            {pageContents.shop.title}
           </h1>
           <p className="text-sm text-sandal-200/80 max-w-xl mx-auto">
-            Handcrafted with cold-pressed botanical oils, sun-dried roots, and sacred floral extracts.
+            {pageContents.shop.subtitle}
           </p>
         </div>
       </div>

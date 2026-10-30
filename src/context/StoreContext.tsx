@@ -9,6 +9,7 @@ import {
   HeaderConfig,
   FooterConfig,
   CartItem,
+  PageContents,
 } from '@/types/store';
 import {
   INITIAL_PRODUCTS,
@@ -16,6 +17,7 @@ import {
   INITIAL_ORDERS,
   INITIAL_HEADER_CONFIG,
   INITIAL_FOOTER_CONFIG,
+  INITIAL_PAGE_CONTENTS,
 } from '@/data/initialData';
 
 interface ToastState {
@@ -57,6 +59,10 @@ interface StoreContextType {
   footerConfig: FooterConfig;
   updateFooterConfig: (config: Partial<FooterConfig>) => void;
 
+  // Page Content Manager for ALL pages
+  pageContents: PageContents;
+  updatePageContent: <K extends keyof PageContents>(page: K, content: Partial<PageContents[K]>) => void;
+
   // Cart
   cart: CartItem[];
   addToCart: (productId: string, sizeIndex?: number, qty?: number) => void;
@@ -94,13 +100,14 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PRODUCTS: 'harpudhas_products_v2',
-  ORDERS: 'harpudhas_orders_v2',
-  BANNERS: 'harpudhas_banners_v2',
-  HEADER: 'harpudhas_header_v2',
-  FOOTER: 'harpudhas_footer_v2',
-  CART: 'harpudhas_cart_v2',
-  WISHLIST: 'harpudhas_wishlist_v2',
+  PRODUCTS: 'harpudhas_products_v3',
+  ORDERS: 'harpudhas_orders_v3',
+  BANNERS: 'harpudhas_banners_v3',
+  HEADER: 'harpudhas_header_v3',
+  FOOTER: 'harpudhas_footer_v3',
+  PAGE_CONTENTS: 'harpudhas_pages_v3',
+  CART: 'harpudhas_cart_v3',
+  WISHLIST: 'harpudhas_wishlist_v3',
 };
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -112,6 +119,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [banners, setBanners] = useState<OfferBanner[]>(INITIAL_BANNERS);
   const [headerConfig, setHeaderConfig] = useState<HeaderConfig>(INITIAL_HEADER_CONFIG);
   const [footerConfig, setFooterConfig] = useState<FooterConfig>(INITIAL_FOOTER_CONFIG);
+  const [pageContents, setPageContents] = useState<PageContents>(INITIAL_PAGE_CONTENTS);
 
   const [cart, setCart] = useState<CartItem[]>([
     { id: 'hair-oil-1', sizeIndex: 0, qty: 1 },
@@ -143,6 +151,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const storedFooter = localStorage.getItem(STORAGE_KEYS.FOOTER);
       if (storedFooter) setFooterConfig(JSON.parse(storedFooter));
 
+      const storedPages = localStorage.getItem(STORAGE_KEYS.PAGE_CONTENTS);
+      if (storedPages) setPageContents(JSON.parse(storedPages));
+
       const storedCart = localStorage.getItem(STORAGE_KEYS.CART);
       if (storedCart) setCart(JSON.parse(storedCart));
 
@@ -173,6 +184,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (isClient) localStorage.setItem(STORAGE_KEYS.FOOTER, JSON.stringify(footerConfig));
   }, [footerConfig, isClient]);
+
+  useEffect(() => {
+    if (isClient) localStorage.setItem(STORAGE_KEYS.PAGE_CONTENTS, JSON.stringify(pageContents));
+  }, [pageContents, isClient]);
 
   useEffect(() => {
     if (isClient) localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
@@ -301,6 +316,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     triggerToast('Footer configuration updated');
   };
 
+  // Page Content Manager
+  const updatePageContent = <K extends keyof PageContents>(page: K, content: Partial<PageContents[K]>) => {
+    setPageContents((prev) => ({
+      ...prev,
+      [page]: {
+        ...prev[page],
+        ...content,
+      },
+    }));
+    triggerToast(`${page.toUpperCase()} page content updated!`);
+  };
+
   // Cart
   const addToCart = (productId: string, sizeIndex = 0, qty = 1) => {
     setCart((prev) => {
@@ -409,6 +436,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setBanners(INITIAL_BANNERS);
     setHeaderConfig(INITIAL_HEADER_CONFIG);
     setFooterConfig(INITIAL_FOOTER_CONFIG);
+    setPageContents(INITIAL_PAGE_CONTENTS);
     localStorage.clear();
     triggerToast('Store reset to factory default data!', 'info');
   };
@@ -421,6 +449,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         banners,
         headerConfig,
         footerConfig,
+        pageContents,
         exportedAt: new Date().toISOString(),
       },
       null,
@@ -436,6 +465,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (data.banners) setBanners(data.banners);
       if (data.headerConfig) setHeaderConfig(data.headerConfig);
       if (data.footerConfig) setFooterConfig(data.footerConfig);
+      if (data.pageContents) setPageContents(data.pageContents);
       triggerToast('Store data imported successfully!');
       return true;
     } catch {
@@ -469,6 +499,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateHeaderConfig,
         footerConfig,
         updateFooterConfig,
+
+        pageContents,
+        updatePageContent,
 
         cart,
         addToCart,

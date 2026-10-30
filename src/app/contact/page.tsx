@@ -10,11 +10,10 @@ import {
   Clock,
   Send,
   CheckCircle2,
-  ShieldCheck,
 } from 'lucide-react';
 
 export default function ContactPage() {
-  const { footerConfig, triggerToast } = useStore();
+  const { footerConfig, pageContents, triggerToast } = useStore();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -41,10 +40,10 @@ export default function ContactPage() {
             Connect With Our Herbalists
           </span>
           <h1 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight">
-            Contact & Consultation
+            {pageContents.contact.title}
           </h1>
           <p className="text-sm text-sandal-200/90 leading-relaxed font-light max-w-xl mx-auto">
-            Need guidance on choosing the right Siddha hair oil or facial routine? Reach out directly to our Pollachi care center.
+            {pageContents.contact.subtitle}
           </p>
         </div>
       </div>
@@ -95,7 +94,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-botanical-900 text-sm">Operating Hours</h4>
-                    <p className="mt-1">Monday – Saturday: 9:00 AM – 7:30 PM IST</p>
+                    <p className="mt-1">{pageContents.contact.hours}</p>
                   </div>
                 </div>
               </div>

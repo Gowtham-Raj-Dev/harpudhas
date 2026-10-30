@@ -3,19 +3,18 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useStore } from '@/context/StoreContext';
 import { withBasePath } from '@/data/products';
 import {
-  Sparkles,
   Leaf,
   Award,
   ShieldCheck,
-  CheckCircle,
   ArrowRight,
-  Heart,
-  Droplets,
 } from 'lucide-react';
 
 export default function AboutPage() {
+  const { pageContents } = useStore();
+
   return (
     <div className="w-full min-h-screen bg-[#FCFBF7] pb-24">
       {/* Header */}
@@ -25,10 +24,10 @@ export default function AboutPage() {
             Ancestral Tamil Siddha Lineage
           </span>
           <h1 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight">
-            Our Traditional Herbal Heritage
+            {pageContents.about.title}
           </h1>
           <p className="text-base text-sandal-200/90 leading-relaxed font-light max-w-2xl mx-auto">
-            Preserving indigenous medicinal botanicals, cold wood-milled virgin oils, and bronze uruli slow-cooking.
+            {pageContents.about.subtitle}
           </p>
         </div>
       </div>
@@ -49,16 +48,13 @@ export default function AboutPage() {
               The Genesis
             </span>
             <h2 className="text-3xl font-serif font-bold text-botanical-900 leading-snug">
-              Born from Centuries-Old Palm Leaf Inscriptions
+              {pageContents.about.storyTitle}
             </h2>
             <p className="text-sm text-gray-700 leading-relaxed">
-              At Hàrpudha's, we believe authentic beauty is the outward reflection of inner cellular vitality.
-              In an era dominated by synthetic foaming agents, silicones, and mineral oil fillers, our mission
-              is to preserve the sacred herbal formulas documented by ancient Tamil Siddha physicians.
+              {pageContents.about.storyText1}
             </p>
             <p className="text-sm text-gray-700 leading-relaxed">
-              Nestled near the lush foothills of Pollachi in Tamil Nadu, we cultivate indigenous red hibiscus,
-              bhringraj, vetiver, and Krishna tulsi using biodynamic Vedic agriculture.
+              {pageContents.about.storyText2}
             </p>
             <div className="pt-2">
               <Link

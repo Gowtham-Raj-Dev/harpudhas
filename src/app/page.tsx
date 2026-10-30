@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { withBasePath } from '@/data/products';
-import { BannerDisplay } from '@/components/BannerDisplay';
 import {
   Sparkles,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   ShieldCheck,
   Star,
-  CheckCircle,
   ShoppingBag,
   Heart,
   Droplets,
@@ -19,15 +19,43 @@ import {
   ChevronDown,
   Clock,
   Award,
-  MessageCircle,
-  Check,
+  Truck,
+  Tag,
 } from 'lucide-react';
 import { CategoryType } from '@/types/store';
 
 export default function HomePage() {
-  const { products, addToCart, wishlist, toggleWishlist, footerConfig } = useStore();
+  const { products, addToCart, wishlist, toggleWishlist, banners, pageContents } = useStore();
 
-  const [heroProductIndex, setHeroProductIndex] = useState(0);
+  // Active home banners
+  const activeBanners = banners.filter(
+    (b) => b.isActive && (b.targetPage === 'all' || b.targetPage === 'home')
+  );
+
+  // Carousel slide index
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-play carousel every 5 seconds
+  useEffect(() => {
+    if (activeBanners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % activeBanners.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeBanners.length]);
+
+  const nextSlide = () => {
+    if (activeBanners.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % activeBanners.length);
+    }
+  };
+
+  const prevSlide = () => {
+    if (activeBanners.length > 0) {
+      setCurrentSlide((prev) => (prev - 1 + activeBanners.length) % activeBanners.length);
+    }
+  };
+
   const [quizArea, setQuizArea] = useState<CategoryType>('Hair Care');
   const [quizConcern, setQuizConcern] = useState<string>('growth');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -37,17 +65,13 @@ export default function HomePage() {
     setSelectedSizes((prev) => ({ ...prev, [productId]: sizeIdx }));
   };
 
-  // Top 3 hero spotlight items
-  const heroSpotlightProducts = products.slice(0, 3);
-  const currentHeroProduct = heroSpotlightProducts[heroProductIndex] || products[0];
-
   const featuredProducts = products.slice(0, 6);
 
   const categories = [
     {
-      title: 'Hair Care & Tonics',
+      title: 'Hair Care & Oils',
       tamil: 'கூந்தல் பராமரிப்பு',
-      desc: 'Cold-pressed Hibiscus, Bhringraj & Shikakai for hair fall control and thickness.',
+      desc: 'Cold-pressed Hibiscus, Bhringraj & Shikakai formulas for thickness and root revival.',
       image: '/images/hair-oil.jpg',
       href: '/shop?category=Hair Care',
       tag: 'Bestselling Oils',
@@ -55,7 +79,7 @@ export default function HomePage() {
     {
       title: 'Face Care & Radiance',
       tamil: 'முகப்பொலிவு சிகிச்சை',
-      desc: 'Pure Kashmiri Saffron & Red Sandalwood for timeless bridal radiance.',
+      desc: 'Pure Kashmiri Saffron & Red Sandalwood for radiant, glass-like natural herbal glow.',
       image: '/images/face-cream.jpg',
       href: '/shop?category=Face Care',
       tag: 'Kumkumadi Glow',
@@ -63,7 +87,7 @@ export default function HomePage() {
     {
       title: 'Skin & Body Rituals',
       tamil: 'உடல் பாதுகாப்பு',
-      desc: 'Traditional 18-Herb Nalangu Maavu & Shea bath bars for natural detox.',
+      desc: 'Traditional 18-Herb Nalangu Maavu & Shea bath bars for whole-body rejuvenation.',
       image: '/images/body-soap.jpg',
       href: '/shop?category=Skin & Body',
       tag: 'Ancestral Bath',
@@ -78,12 +102,12 @@ export default function HomePage() {
 
   const faqs = [
     {
-      q: 'Are Hàrpudha’s products 100% natural and chemical-free?',
-      a: 'Yes, absolutely. Every formulation is handcrafted strictly following authentic Siddha and Ayurvedic scriptures. We use zero sulfates, zero parabens, zero silicones, and zero mineral oils.',
+      q: 'Are Hàrpudha’s products 100% natural and free from chemicals?',
+      a: 'Yes, absolutely. Every formulation is handcrafted strictly following authentic Siddha and Ayurvedic scriptures. We do not use parabens, sulfates, silicones, synthetic fragrances, or mineral oils.',
     },
     {
       q: 'How long before I see results from the Hibiscus & Bhringraj Hair Oil?',
-      a: 'Most customers notice visible reduction in hair fall and improved scalp hydration within 2 to 3 weeks of regular application (2-3 times weekly with gentle scalp massage).',
+      a: 'Most customers notice significant reduction in hair fall and improved scalp nourishment within 2 to 3 weeks of regular application (2-3 times weekly with gentle scalp massage).',
     },
     {
       q: 'What is your delivery timeframe across India?',
@@ -91,380 +115,382 @@ export default function HomePage() {
     },
     {
       q: 'Can I track my order once placed?',
-      a: 'Yes! Once you place an order, you will receive an Order ID (e.g. HARP-7821). You can visit our "Track Order" page anytime to see live updates from Pending -> Confirmed -> Packed -> Shipped -> Delivered.',
+      a: 'Yes! Once you place an order, you will receive an Order ID (e.g., HARP-7821). You can visit our "Track Order" page anytime to see live updates from Pending -> Confirmed -> Packed -> Shipped -> Delivered.',
     },
   ];
 
   return (
     <div className="w-full">
-      {/* 1. LUXURIOUS HERO SECTION - STUNNING, COHESIVE & HIGH-CONVERTING */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E2018] via-[#122A1F] to-[#0A1711] text-white pt-8 pb-20 lg:pt-16 lg:pb-28">
-        {/* Ambient golden and emerald glow orbs */}
-        <div className="absolute top-0 right-1/4 -mt-24 w-96 h-96 rounded-full bg-[#C89D54]/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              {/* Heritage Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-[#C89D54]/15 text-sandal-300 border border-[#C89D54]/30 backdrop-blur-md">
-                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-                <span>பாரம்பரிய தமிழ் சித்த மருத்துவம் • 100% தூய மூலிகை</span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight tracking-tight">
-                Awaken Timeless <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sandal-200 via-amber-300 to-sandal-400 italic font-normal">
-                  Herbal Radiance
-                </span>{' '}
-                With <br />
-                Sacred Botanicals.
+      {/* 1. DYNAMIC AUTO-PLAYING HERO BANNER CAROUSEL */}
+      <section className="relative w-full bg-[#11241B] overflow-hidden">
+        {activeBanners.length === 0 ? (
+          // Default Hero Fallback if no banner active
+          <div className="relative min-h-[500px] lg:min-h-[580px] flex items-center justify-center text-center text-white px-4 py-20">
+            <Image
+              src={withBasePath('/images/hero-banner.jpg')}
+              alt="Harpudhas Siddha Botanicals"
+              fill
+              priority
+              className="object-cover opacity-35"
+            />
+            <div className="relative z-10 max-w-3xl mx-auto space-y-5">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-sandal-500/20 text-sandal-300 border border-sandal-400/30">
+                {pageContents.home.heroBadge}
+              </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold leading-tight">
+                {pageContents.home.heroTitle}
               </h1>
-
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-light">
-                Slow-infused in traditional bronze urulis with hand-harvested Western Ghats herbs,
-                cold-pressed virgin seed oils, and pure Kashmiri saffron. Zero sulfates, nil mineral oils.
+              <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed max-w-2xl mx-auto">
+                {pageContents.home.heroSubtitle}
               </p>
-
-              {/* Quick Trust Checks */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 max-w-xl mx-auto lg:mx-0 text-xs text-sandal-200">
-                <div className="flex items-center justify-center lg:justify-start gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>Wood-Milled Virgin Oils</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>72h Bronze Uruli Infusion</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>Lab Tested in Pollachi</span>
-                </div>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-3">
+              <div className="pt-2">
                 <Link
                   href="/shop"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-sandal-500 to-amber-400 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:from-sandal-400 hover:to-amber-300 transition-all duration-200 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 group"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:bg-sandal-400 transition-all shadow-xl"
                 >
-                  <ShoppingBag className="w-4 h-4 text-botanical-950" />
-                  <span>Shop Herbal Catalog</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Shop Essentials</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
-
-                <a
-                  href="#ayurvedic-quiz"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs uppercase tracking-wider transition-all duration-200 border border-white/20 flex items-center justify-center gap-2 backdrop-blur-md"
-                >
-                  <Sparkles className="w-4 h-4 text-sandal-300" />
-                  <span>Take 30-Sec Dosha Quiz</span>
-                </a>
-
-                {footerConfig.whatsapp && (
-                  <a
-                    href={`https://wa.me/${footerConfig.whatsapp.replace(/\D/g, '')}?text=Hello%20Harpudhas%20Store%2C%20I%20need%20herbal%20consultation`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4 text-emerald-400" />
-                    <span>WhatsApp Doctor</span>
-                  </a>
-                )}
-              </div>
-
-              {/* Trust Metric Row */}
-              <div className="pt-6 border-t border-botanical-700/60 grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0">
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl font-serif font-bold text-sandal-300">50K+</div>
-                  <div className="text-xs text-sandal-200/80">Happy Ritualists</div>
-                </div>
-                <div className="text-center lg:text-left border-x border-botanical-700/60 px-2">
-                  <div className="text-2xl font-serif font-bold text-sandal-300">4.9 ★</div>
-                  <div className="text-xs text-sandal-200/80">Certified Reviews</div>
-                </div>
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl font-serif font-bold text-sandal-300">100%</div>
-                  <div className="text-xs text-sandal-200/80">Chemical-Free</div>
-                </div>
               </div>
             </div>
+          </div>
+        ) : (
+          // Multi-Image Auto-Playing Slider
+          <div className="relative w-full min-h-[500px] sm:min-h-[560px] lg:min-h-[620px] flex items-center">
+            {activeBanners.map((banner, index) => {
+              const isCurrent = index === currentSlide;
+              const bannerImg = banner.imageUrl || '/images/hero-banner.jpg';
 
-            {/* Right Column: Visual Hero Showcase with Fixed Height & Interactive Switcher */}
-            <div className="lg:col-span-5 relative flex flex-col items-center">
-              {/* Main Showcase Frame with guaranteed height */}
-              <div className="relative w-full max-w-md h-[480px] sm:h-[540px] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#C89D54]/50 group bg-slate-900">
-                <Image
-                  src={withBasePath(currentHeroProduct.image || '/images/hero-banner.jpg')}
-                  alt={currentHeroProduct.name}
-                  fill
-                  priority
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
+              return (
+                <div
+                  key={banner.id}
+                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                    isCurrent ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
+                >
+                  {/* Real Background Image with Gradient Overlay */}
+                  <Image
+                    src={withBasePath(bannerImg)}
+                    alt={banner.title}
+                    fill
+                    priority={index === 0}
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/35" />
 
-                {/* Floating Badge Top Left */}
-                <div className="absolute top-4 left-4 bg-[#0A1610]/90 backdrop-blur-md border border-[#C89D54]/50 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg">
-                  <Award className="w-4 h-4 text-sandal-400" />
-                  <div>
-                    <p className="text-[10px] text-sandal-300 uppercase font-semibold">Heirloom Siddha</p>
-                    <p className="text-xs font-bold text-white">Batch Certified</p>
-                  </div>
-                </div>
+                  {/* Banner Content */}
+                  <div className="relative z-10 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center">
+                    <div className="max-w-2xl space-y-5 text-white py-16">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {banner.badge && (
+                          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-sandal-500 text-botanical-950 shadow-sm">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{banner.badge}</span>
+                          </span>
+                        )}
+                        {banner.discountCode && (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/20 text-sandal-200 border border-white/25">
+                            <Tag className="w-3 h-3 text-sandal-400" />
+                            <span>Use Code: {banner.discountCode}</span>
+                          </span>
+                        )}
+                      </div>
 
-                {/* Floating Badge Top Right */}
-                <div className="absolute top-4 right-4 bg-[#0A1610]/90 backdrop-blur-md border border-emerald-500/50 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg">
-                  <div className="flex items-center text-amber-400">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
-                  </div>
-                  <span className="text-xs font-bold text-white">4.9 / 5</span>
-                </div>
+                      <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight tracking-tight">
+                        {banner.title}
+                      </h2>
 
-                {/* Bottom Product Spotlight Glass Card */}
-                <div className="absolute bottom-4 left-4 right-4 bg-[#0E2018]/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-[#C89D54]/40 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">
-                      {currentHeroProduct.badge} • {currentHeroProduct.tamilName}
-                    </span>
-                    <h3 className="text-xs sm:text-sm font-serif font-bold text-white line-clamp-1">
-                      {currentHeroProduct.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-sm font-bold text-sandal-300">
-                        ₹{currentHeroProduct.price}
-                      </span>
-                      <span className="text-xs text-gray-400 line-through">
-                        ₹{currentHeroProduct.mrp}
-                      </span>
+                      <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed font-light max-w-xl">
+                        {banner.subtitle}
+                      </p>
+
+                      <div className="pt-2 flex flex-wrap items-center gap-4">
+                        <Link
+                          href={banner.buttonLink || '/shop'}
+                          className="px-8 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:bg-sandal-400 transition-all shadow-xl flex items-center gap-2 group"
+                        >
+                          <span>{banner.buttonText || 'Shop Collection'}</span>
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </Link>
+
+                        <a
+                          href="#ayurvedic-quiz"
+                          className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs uppercase tracking-wider border border-white/25 transition-all backdrop-blur-xs"
+                        >
+                          Take Dosha Quiz
+                        </a>
+                      </div>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => addToCart(currentHeroProduct.id, 0, 1)}
-                    className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sandal-500 to-amber-400 text-botanical-950 font-bold text-xs hover:from-sandal-400 hover:to-amber-300 transition-all flex items-center gap-1 shadow-md whitespace-nowrap"
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    <span>Add +</span>
-                  </button>
                 </div>
-              </div>
+              );
+            })}
 
-              {/* Interactive Showcase Selector Pills */}
-              <div className="mt-4 flex items-center justify-center gap-2">
-                {heroSpotlightProducts.map((p, idx) => (
-                  <button
-                    key={p.id}
-                    onClick={() => setHeroProductIndex(idx)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                      heroProductIndex === idx
-                        ? 'bg-sandal-500 text-botanical-950 border-sandal-400 shadow-md scale-105'
-                        : 'bg-white/10 text-sandal-200 border-white/15 hover:bg-white/20'
-                    }`}
-                  >
-                    {p.name.split(' ')[0]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. DYNAMIC OFFER BANNERS (Target: Home or All) */}
-      <BannerDisplay page="home" />
-
-      {/* 3. BROWSE BY ANCESTRAL CATEGORY */}
-      <section className="py-16 bg-[#F7F3E8] border-y border-sandal-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-              Pure Botanical Collections
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-              Shop By Ancestral Ritual
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Every formula addresses root concerns through handpicked native herbs and stone-ground extracts.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {categories.map((cat) => (
-              <Link
-                key={cat.title}
-                href={cat.href}
-                className="group relative overflow-hidden rounded-2xl bg-white border border-sandal-300/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col"
-              >
-                <div className="relative aspect-4/3 w-full overflow-hidden bg-sandal-100">
-                  <Image
-                    src={withBasePath(cat.image)}
-                    alt={cat.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-108"
-                  />
-                  <div className="absolute top-3 right-3 bg-botanical-900/85 backdrop-blur-xs text-sandal-200 text-xs px-2.5 py-1 rounded-full font-medium">
-                    {cat.tag}
-                  </div>
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-medium text-emerald-800">{cat.tamil}</span>
-                    <h3 className="text-xl font-serif font-bold text-botanical-900 mt-0.5 group-hover:text-botanical-700 transition-colors">
-                      {cat.title}
-                    </h3>
-                    <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                      {cat.desc}
-                    </p>
-                  </div>
-                  <div className="mt-5 pt-3 border-t border-sandal-100 flex items-center text-xs font-semibold text-botanical-800 group-hover:text-botanical-950">
-                    <span>Explore Products</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. SIGNATURE HERBAL FORMULATIONS */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-              Community Favorites
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-              Signature Herbal Formulations
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Micro-batched with zero artificial fillers for visible wellness.
-            </p>
-          </div>
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-botanical-800 text-botanical-900 text-xs font-semibold hover:bg-botanical-800 hover:text-white transition-colors"
-          >
-            <span>View All ({products.length}) Products</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProducts.map((prod) => {
-            const currentSizeIdx = selectedSizes[prod.id] || 0;
-            const currentSize = prod.sizeOptions[currentSizeIdx] || prod.sizeOptions[0];
-            const isWishlisted = wishlist.includes(prod.id);
-
-            return (
-              <div
-                key={prod.id}
-                className="group bg-white rounded-2xl border border-sandal-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative"
-              >
-                {/* Badges & Wishlist */}
-                <div className="absolute top-3 left-3 z-10">
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wider bg-botanical-800 text-sandal-100 shadow-xs">
-                    {prod.badge}
-                  </span>
-                </div>
+            {/* Slider Navigation Arrows (If more than 1 banner) */}
+            {activeBanners.length > 1 && (
+              <>
                 <button
-                  onClick={() => toggleWishlist(prod.id)}
-                  className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 backdrop-blur-xs text-gray-500 hover:text-rose-500 hover:bg-white shadow-xs transition-colors"
-                  title="Save to Wishlist"
+                  onClick={prevSlide}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/70 text-white border border-white/20 transition-all shadow-lg focus:outline-none"
+                  aria-label="Previous Slide"
                 >
-                  <Heart
-                    className={`w-4 h-4 ${
-                      isWishlisted ? 'fill-rose-500 text-rose-500' : ''
-                    }`}
-                  />
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/70 text-white border border-white/20 transition-all shadow-lg focus:outline-none"
+                  aria-label="Next Slide"
+                >
+                  <ChevronRight className="w-6 h-6" />
                 </button>
 
-                {/* Product Image */}
-                <Link
-                  href={`/product/${prod.id}`}
-                  className="relative aspect-square w-full overflow-hidden bg-sandal-50"
-                >
-                  <Image
-                    src={withBasePath(prod.image)}
-                    alt={prod.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-106"
-                  />
-                </Link>
-
-                {/* Product Info */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                      <span className="text-emerald-800 font-medium">{prod.tamilName}</span>
-                      <div className="flex items-center gap-1 text-amber-500 font-bold">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span>{prod.rating.toFixed(1)}</span>
-                        <span className="text-gray-400 font-normal">({prod.reviews})</span>
-                      </div>
-                    </div>
-
-                    <Link href={`/product/${prod.id}`}>
-                      <h3 className="font-serif font-bold text-lg text-botanical-900 group-hover:text-botanical-700 transition-colors line-clamp-1">
-                        {prod.name}
-                      </h3>
-                    </Link>
-
-                    <p className="text-xs text-gray-600 line-clamp-2 mt-1.5 leading-relaxed">
-                      {prod.shortDesc}
-                    </p>
-                  </div>
-
-                  {/* Size Selector */}
-                  {prod.sizeOptions && prod.sizeOptions.length > 1 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {prod.sizeOptions.map((opt, sIdx) => (
-                        <button
-                          key={opt.label}
-                          onClick={() => handleSizeChange(prod.id, sIdx)}
-                          className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
-                            currentSizeIdx === sIdx
-                              ? 'bg-botanical-800 text-white border-botanical-800'
-                              : 'bg-sandal-50 text-gray-700 border-sandal-200 hover:border-botanical-600'
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Price & Add to Cart */}
-                  <div className="pt-3 border-t border-sandal-100 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs text-gray-400 line-through">₹{prod.mrp}</div>
-                      <div className="text-lg font-bold text-botanical-900">
-                        ₹{currentSize?.price || prod.price}
-                      </div>
-                    </div>
-
+                {/* Slider Dot Indicators */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+                  {activeBanners.map((_, idx) => (
                     <button
-                      onClick={() => addToCart(prod.id, currentSizeIdx, 1)}
-                      className="px-4 py-2 rounded-xl bg-botanical-800 text-white text-xs font-semibold hover:bg-botanical-900 transition-colors flex items-center gap-1.5 shadow-sm"
-                    >
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                      <span>Add to Basket</span>
-                    </button>
-                  </div>
+                      key={idx}
+                      onClick={() => setCurrentSlide(idx)}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        currentSlide === idx ? 'w-8 bg-sandal-400' : 'w-2.5 bg-white/40 hover:bg-white/70'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* 2. VALUE PROPOSITION BAR */}
+      <div className="w-full bg-[#F7F3E8] border-b border-sandal-200/80 py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="flex items-center justify-center gap-2.5 p-2">
+              <Leaf className="w-5 h-5 text-emerald-800 flex-shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-bold text-botanical-900">100% Herbal Siddha</h4>
+                <p className="text-[11px] text-gray-500">Nil Sulfates, Parabens or Chemicals</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2.5 p-2">
+              <Award className="w-5 h-5 text-amber-700 flex-shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-bold text-botanical-900">Bronze Uruli Alchemy</h4>
+                <p className="text-[11px] text-gray-500">72-Hour Traditional Slow-Cooking</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2.5 p-2">
+              <Truck className="w-5 h-5 text-emerald-800 flex-shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-bold text-botanical-900">Free Express Delivery</h4>
+                <p className="text-[11px] text-gray-500">On all orders above ₹499 in India</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2.5 p-2">
+              <ShieldCheck className="w-5 h-5 text-amber-700 flex-shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-bold text-botanical-900">Lab Batch Certified</h4>
+                <p className="text-[11px] text-gray-500">Direct From Pollachi Farmstead</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. CATEGORIES SECTION (Editable Content via Admin) */}
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
+            Ancestral Collections
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
+            {pageContents.home.catTitle}
+          </h2>
+          <p className="text-sm text-gray-600 mt-2">
+            {pageContents.home.catSubtitle}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {categories.map((cat) => (
+            <Link
+              key={cat.title}
+              href={cat.href}
+              className="group relative overflow-hidden rounded-3xl bg-white border border-sandal-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+            >
+              <div className="relative h-64 w-full overflow-hidden bg-sandal-50">
+                <Image
+                  src={withBasePath(cat.image)}
+                  alt={cat.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-106"
+                />
+                <div className="absolute top-3 right-3 bg-botanical-900/85 backdrop-blur-xs text-sandal-200 text-xs px-3 py-1 rounded-full font-semibold">
+                  {cat.tag}
                 </div>
               </div>
-            );
-          })}
+
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-bold text-emerald-800">{cat.tamil}</span>
+                  <h3 className="text-xl font-serif font-bold text-botanical-900 mt-0.5 group-hover:text-botanical-700 transition-colors">
+                    {cat.title}
+                  </h3>
+                  <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                    {cat.desc}
+                  </p>
+                </div>
+                <div className="mt-5 pt-3 border-t border-sandal-100 flex items-center text-xs font-bold text-botanical-800 group-hover:text-botanical-950">
+                  <span>Explore Remedies</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* 5. AYURVEDIC DOSHA QUIZ */}
+      {/* 4. BESTSELLING HERBAL FORMULATIONS */}
+      <section className="py-16 bg-[#F7F3E8] border-y border-sandal-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
+                Community Favorites
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
+                {pageContents.home.prodTitle}
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                {pageContents.home.prodSubtitle}
+              </p>
+            </div>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-botanical-800 text-botanical-900 text-xs font-bold uppercase tracking-wider hover:bg-botanical-800 hover:text-white transition-colors"
+            >
+              <span>View All ({products.length}) Products</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Product Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredProducts.map((prod) => {
+              const currentSizeIdx = selectedSizes[prod.id] || 0;
+              const currentSize = prod.sizeOptions[currentSizeIdx] || prod.sizeOptions[0];
+              const isWishlisted = wishlist.includes(prod.id);
+
+              return (
+                <div
+                  key={prod.id}
+                  className="group bg-white rounded-3xl border border-sandal-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative"
+                >
+                  {/* Badges & Wishlist */}
+                  <div className="absolute top-3.5 left-3.5 z-10">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider bg-botanical-800 text-sandal-100 shadow-xs">
+                      {prod.badge}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => toggleWishlist(prod.id)}
+                    className="absolute top-3.5 right-3.5 z-10 p-2 rounded-full bg-white/90 backdrop-blur-xs text-gray-500 hover:text-rose-500 hover:bg-white shadow-xs transition-colors"
+                    title="Save to Wishlist"
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isWishlisted ? 'fill-rose-500 text-rose-500' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {/* Product Image */}
+                  <Link
+                    href={`/product/${prod.id}`}
+                    className="relative aspect-square w-full overflow-hidden bg-sandal-50"
+                  >
+                    <Image
+                      src={withBasePath(prod.image)}
+                      alt={prod.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-106"
+                    />
+                  </Link>
+
+                  {/* Product Info */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <span className="text-emerald-800 font-bold">{prod.tamilName}</span>
+                        <div className="flex items-center gap-1 text-amber-500 font-bold">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span>{prod.rating.toFixed(1)}</span>
+                          <span className="text-gray-400 font-normal">({prod.reviews})</span>
+                        </div>
+                      </div>
+
+                      <Link href={`/product/${prod.id}`}>
+                        <h3 className="font-serif font-bold text-lg text-botanical-900 group-hover:text-botanical-700 transition-colors line-clamp-1">
+                          {prod.name}
+                        </h3>
+                      </Link>
+
+                      <p className="text-xs text-gray-600 line-clamp-2 mt-1.5 leading-relaxed">
+                        {prod.shortDesc}
+                      </p>
+                    </div>
+
+                    {/* Size Selector */}
+                    {prod.sizeOptions && prod.sizeOptions.length > 1 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {prod.sizeOptions.map((opt, sIdx) => (
+                          <button
+                            key={opt.label}
+                            onClick={() => handleSizeChange(prod.id, sIdx)}
+                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${
+                              currentSizeIdx === sIdx
+                                ? 'bg-botanical-800 text-white border-botanical-800'
+                                : 'bg-sandal-50 text-gray-700 border-sandal-200 hover:border-botanical-600'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Price & Add to Cart */}
+                    <div className="pt-3 border-t border-sandal-100 flex items-center justify-between">
+                      <div>
+                        <div className="text-xs text-gray-400 line-through">₹{prod.mrp}</div>
+                        <div className="text-lg font-bold text-botanical-900">
+                          ₹{currentSize?.price || prod.price}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => addToCart(prod.id, currentSizeIdx, 1)}
+                        className="px-4 py-2.5 rounded-xl bg-botanical-800 text-white text-xs font-bold hover:bg-botanical-900 transition-colors flex items-center gap-1.5 shadow-sm"
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. INTERACTIVE DOSHA QUIZ */}
       <section id="ayurvedic-quiz" className="py-20 bg-botanical-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -478,7 +504,7 @@ export default function HomePage() {
               </h2>
               <p className="text-sm text-sandal-200/80 leading-relaxed">
                 Take 30 seconds to select your primary focus area. Our herbal experts have mapped traditional
-                botanicals to restore natural equilibrium and deep cellular nourishment.
+                botanicals to restore natural equilibrium.
               </p>
 
               <div className="space-y-2 pt-2">
@@ -564,7 +590,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Recommendations */}
+            {/* Quiz Recommendation Cards */}
             <div className="lg:col-span-7 bg-botanical-800/60 p-6 sm:p-8 rounded-3xl border border-botanical-700/80">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -606,7 +632,7 @@ export default function HomePage() {
                       <span className="text-sm font-bold text-sandal-300">₹{prod.price}</span>
                       <button
                         onClick={() => addToCart(prod.id, 0, 1)}
-                        className="px-3 py-1.5 rounded-lg bg-sandal-500 text-botanical-950 font-semibold text-xs hover:bg-sandal-400 transition-colors flex items-center gap-1"
+                        className="px-3.5 py-1.5 rounded-lg bg-sandal-500 text-botanical-950 font-bold text-xs hover:bg-sandal-400 transition-colors flex items-center gap-1"
                       >
                         <ShoppingBag className="w-3 h-3" />
                         <span>Add To Basket</span>
@@ -628,15 +654,15 @@ export default function HomePage() {
               The Artisan Process
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-              From Sacred Ghats to Your Daily Vanity
+              {pageContents.home.processTitle}
             </h2>
             <p className="text-sm text-gray-600 mt-2">
-              No industrial speed-cuts. Every bottle requires 14 days of traditional Siddha patience.
+              {pageContents.home.processSubtitle}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
+            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 1
               </div>
@@ -646,7 +672,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
+            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 2
               </div>
@@ -656,7 +682,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
+            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 3
               </div>
@@ -666,7 +692,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
+            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
                 4
               </div>

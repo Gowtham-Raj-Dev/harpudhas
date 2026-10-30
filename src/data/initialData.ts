@@ -1,4 +1,4 @@
-import { Product, OfferBanner, Order, HeaderConfig, FooterConfig } from '@/types/store';
+import { Product, OfferBanner, Order, HeaderConfig, FooterConfig, PageContents } from '@/types/store';
 import { PRODUCTS } from './products';
 
 export const INITIAL_PRODUCTS: Product[] = PRODUCTS.map((p) => ({
@@ -9,55 +9,44 @@ export const INITIAL_PRODUCTS: Product[] = PRODUCTS.map((p) => ({
 export const INITIAL_BANNERS: OfferBanner[] = [
   {
     id: 'banner-1',
-    title: '🌿 Grand Herbal Harvest Festival — 20% Instant OFF',
-    subtitle: 'Pure cold-pressed hair oils, artisanal soaps, and saffron creams handmade in micro-batches.',
-    badge: 'Limited Period Offer',
+    title: 'Grand Herbal Harvest Festival',
+    subtitle: 'Pure cold-pressed virgin oils, Kashmiri saffron creams & artisanal soaps handmade in micro-batches.',
+    badge: 'Festival Special',
     discountCode: 'HARPUDHAS20',
     buttonText: 'Shop Essentials',
     buttonLink: '/shop',
-    bgGradient: 'from-emerald-900 via-botanical-800 to-teal-950',
+    imageUrl: '/images/hero-banner.jpg',
     targetPage: 'home',
     isActive: true,
   },
   {
     id: 'banner-2',
-    title: '✨ Free Nalangu Maavu Artisan Ubtan Jar with Orders Over ₹799',
-    subtitle: 'Ancient 18-herb traditional bridal bath blend automatically gifted at checkout!',
-    badge: 'Complimentary Gift',
-    discountCode: 'FREEUBTAN',
-    buttonText: 'Explore Hair & Skin',
-    buttonLink: '/shop',
-    bgGradient: 'from-amber-950 via-sandal-700 to-amber-900',
-    targetPage: 'shop',
+    title: 'Cold-Pressed Root-Revive Hair Oil',
+    subtitle: 'Slow-infused in bronze urulis with fresh red hibiscus flowers and wild bhringraj leaves.',
+    badge: 'Signature Formula',
+    discountCode: 'HERBAL15',
+    buttonText: 'Explore Hair Care',
+    buttonLink: '/shop?category=Hair Care',
+    imageUrl: '/images/hair-oil.jpg',
+    targetPage: 'home',
     isActive: true,
   },
   {
     id: 'banner-3',
-    title: '🚚 Zero Shipping Charges Across India on All Orders',
-    subtitle: 'No minimum cart value required this weekend. Freshly dispatched from our Pollachi herbal facility.',
-    badge: 'Special Weekend Deal',
-    buttonText: 'Track Your Order',
-    buttonLink: '/orders',
-    bgGradient: 'from-slate-900 via-botanical-900 to-emerald-950',
-    targetPage: 'all',
+    title: 'Kumkumadi Kashmiri Saffron & Sandalwood',
+    subtitle: 'Experience ancestral bridal glow with Grade-1 Pampore saffron threads and Mysore sandalwood.',
+    badge: 'Bridal Radiance',
+    discountCode: 'SAFFRONGLOW',
+    buttonText: 'View Radiance Care',
+    buttonLink: '/shop?category=Face Care',
+    imageUrl: '/images/face-cream.jpg',
+    targetPage: 'home',
     isActive: true,
-  },
-  {
-    id: 'banner-4',
-    title: '🌺 Pure Kashmiri Saffron Radiance Combo — Save ₹350',
-    subtitle: 'Kumkumadi Radiance Cream + Red Sandalwood Glow Pack duo for glass-like natural herbal glow.',
-    badge: 'Best-Selling Duo',
-    discountCode: 'GLOWCOMBO',
-    buttonText: 'View Product Details',
-    buttonLink: '/product/face-cream-1',
-    bgGradient: 'from-rose-950 via-terracotta-600 to-amber-950',
-    targetPage: 'product',
-    isActive: false, // Can be toggled on by admin
   },
 ];
 
 export const INITIAL_HEADER_CONFIG: HeaderConfig = {
-  announcementText: '🌿 Authentic Siddha & Ayurvedic Formulations • Free Shipping Above ₹499 • Use Code: HARPUDHAS15 for 15% OFF',
+  announcementText: '🌿 Authentic Siddha & Ayurvedic Formulations • Free Express Delivery Above ₹499 • Use Code: HARPUDHAS15 for 15% OFF',
   announcementActive: true,
   phone: '+91 98420 56789',
   whatsapp: '+91 98420 56789',
@@ -77,6 +66,39 @@ export const INITIAL_FOOTER_CONFIG: FooterConfig = {
   facebook: 'https://facebook.com',
   youtube: 'https://youtube.com',
   copyrightText: "© 2026 Hàrpudha's Herbal Botanicals. All Rights Reserved. Pure. Ethical. Siddha Formulated.",
+};
+
+export const INITIAL_PAGE_CONTENTS: PageContents = {
+  home: {
+    heroBadge: 'பாரம்பரிய தமிழ் சித்த மருத்துவம் • 100% தூய மூலிகை',
+    heroTitle: 'Awaken Timeless Herbal Radiance With Sacred Botanicals.',
+    heroSubtitle:
+      'Slow-infused in traditional bronze urulis with hand-harvested Western Ghats herbs, cold-pressed virgin seed oils, and Grade-1 Kashmiri saffron. Zero sulfates, zero silicones, 100% chemical-free.',
+    catTitle: 'Shop By Ancestral Ritual',
+    catSubtitle: 'Every formula addresses root concerns through handpicked native herbs and stone-ground extracts.',
+    prodTitle: 'Signature Herbal Formulations',
+    prodSubtitle: 'Micro-batched with zero artificial fillers for visible cellular nourishment.',
+    processTitle: 'From Sacred Ghats to Your Daily Vanity',
+    processSubtitle: 'No industrial speed-cuts. Every bottle requires 14 days of traditional Siddha patience.',
+  },
+  about: {
+    title: 'Our Traditional Herbal Heritage',
+    subtitle: 'Preserving indigenous medicinal botanicals, cold wood-milled virgin oils, and bronze uruli slow-cooking.',
+    storyTitle: 'Born from Centuries-Old Palm Leaf Inscriptions',
+    storyText1:
+      'At Hàrpudha’s, we believe authentic beauty is the outward reflection of inner cellular vitality. In an era dominated by synthetic foaming agents, silicones, and mineral oil fillers, our mission is to preserve the sacred herbal formulas documented by ancient Tamil Siddha physicians.',
+    storyText2:
+      'Nestled near the lush foothills of Pollachi in Tamil Nadu, we cultivate indigenous red hibiscus, bhringraj, vetiver, and Krishna tulsi using biodynamic Vedic agriculture.',
+  },
+  contact: {
+    title: 'Contact & Herbal Consultation',
+    subtitle: 'Need guidance on choosing the right Siddha hair oil or facial routine? Reach out directly to our Pollachi care center.',
+    hours: 'Monday – Saturday: 9:00 AM – 7:30 PM IST',
+  },
+  shop: {
+    title: 'All Herbal Formulations',
+    subtitle: 'Handcrafted with cold-pressed botanical oils, sun-dried roots, and sacred floral extracts.',
+  },
 };
 
 export const INITIAL_ORDERS: Order[] = [
