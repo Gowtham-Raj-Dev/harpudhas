@@ -1,10 +1,99 @@
-import { Product, OfferBanner, Order, HeaderConfig, FooterConfig, PageContents } from '@/types/store';
+import {
+  Product,
+  OfferBanner,
+  Order,
+  HeaderConfig,
+  FooterConfig,
+  PageContents,
+  ProductPlacement,
+  SiteSettings,
+} from '@/types/store';
 import { PRODUCTS } from './products';
 
-export const INITIAL_PRODUCTS: Product[] = PRODUCTS.map((p) => ({
-  ...p,
-  inStock: true,
-}));
+const NEW_ARRIVALS = new Set(['hair-serum-1', 'face-pack-1', 'body-lotion-1', 'body-butter-1']);
+const CART_UPSELL = new Set(['hair-serum-1', 'face-wash-1', 'body-soap-1', 'face-pack-1']);
+
+export const INITIAL_PRODUCTS: Product[] = PRODUCTS.map((p, i) => {
+  const placements: ProductPlacement[] = ['shop', 'product-related', 'home-quiz'];
+  if (i < 6) placements.push('home-featured');
+  if (NEW_ARRIVALS.has(p.id)) placements.push('home-new');
+  if (CART_UPSELL.has(p.id)) placements.push('cart-upsell');
+  return {
+    ...p,
+    inStock: true,
+    isVisible: true,
+    placements,
+    stock: 50,
+    sku: `HRP-${p.id.toUpperCase().replace(/-1$/, '')}`,
+    sortOrder: i + 1,
+    createdAt: '2026-01-01T00:00:00.000Z',
+  };
+});
+
+export const INITIAL_SITE_SETTINGS: SiteSettings = {
+  theme: {
+    site: { preset: 'botanical', primary: '#132A1F', accent: '#C89D54' },
+    admin: { accent: 'emerald', sidebar: 'forest' },
+  },
+  sections: {
+    announcementBar: true,
+    homeHero: true,
+    homeUsp: true,
+    homeCategories: true,
+    homeFeatured: true,
+    homeNew: true,
+    homeQuiz: true,
+    homeProcess: true,
+    homeFaq: true,
+  },
+  homeProducts: {
+    'home-featured': {
+      mode: 'manual',
+      rule: 'bestselling',
+      category: 'all',
+      limit: 6,
+      columns: 3,
+      hideOutOfStock: false,
+      order: PRODUCTS.slice(0, 6).map((p) => p.id),
+    },
+    'home-new': {
+      mode: 'manual',
+      rule: 'newest',
+      category: 'all',
+      limit: 4,
+      columns: 4,
+      hideOutOfStock: true,
+      order: PRODUCTS.filter((p) => NEW_ARRIVALS.has(p.id)).map((p) => p.id),
+    },
+    'home-quiz': {
+      mode: 'auto',
+      rule: 'top-rated',
+      category: 'all',
+      limit: 2,
+      columns: 3,
+      hideOutOfStock: true,
+      order: [],
+    },
+  },
+  newSectionTitle: 'Fresh From the Apothecary',
+  newSectionSubtitle: 'Newly crafted micro-batches, just out of the bronze uruli.',
+  storeOpen: true,
+  closedMessage: 'We are restocking fresh batches. Orders reopen shortly — thank you for your patience!',
+  codEnabled: true,
+  lowStockThreshold: 10,
+  abandonAfterMinutes: 30,
+  followUpCoupon: 'WELCOME10',
+  followUpTemplates: {
+    added_to_cart:
+      'Vanakkam {name} 🌿 You left {cart_items} in your Hàrpudha’s basket. Complete your order today with code {coupon} for extra savings: {store_url}',
+    checkout_started:
+      'Hi {name}, your herbal order ({cart_value}) is almost done! Need help with checkout? Reply here and we’ll assist. Use {coupon} for a little extra off 🌿',
+    details_entered:
+      'Hi {name}, we noticed your order for {cart_items} ({cart_value}) wasn’t completed. Shall we place it for you? Cash on delivery available. Code {coupon} still active!',
+    ordered: 'Thank you {name} for choosing Hàrpudha’s 🙏 How are you liking your products? We’d love your feedback.',
+    general: 'Vanakkam {name} 🌿 Fresh batches of our Siddha hair oils and saffron creams are in. Shop now with code {coupon}: {store_url}',
+  },
+};
 
 export const INITIAL_BANNERS: OfferBanner[] = [
   {

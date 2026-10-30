@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="antialiased selection:bg-botanical-700 selection:text-white overflow-x-hidden min-h-screen flex flex-col bg-[#FCFBF7] text-[#132A1F]">
+      <body className="antialiased selection:bg-botanical-700 selection:text-white overflow-x-hidden min-h-screen flex flex-col bg-sandal-50 text-botanical-800">
         <StoreProvider>
           <AppShell>{children}</AppShell>
         </StoreProvider>

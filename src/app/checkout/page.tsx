@@ -22,7 +22,7 @@ import {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, products, cartTotals, addOrder, clearCart, triggerToast } = useStore();
+  const { cart, products, cartTotals, addOrder, clearCart, triggerToast, siteSettings, trackCheckoutStarted, identifyVisitor, currentVisitor } = useStore();
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -37,6 +37,45 @@ export default function CheckoutPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+
+  // Journey tracking: reached checkout, then identified once name + phone are typed
+  React.useEffect(() => {
+    if (cart.length > 0) trackCheckoutStarted();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // Pre-fill for signed-in customers
+  React.useEffect(() => {
+    if (!currentVisitor?.signedIn) return;
+    if (!fullName && currentVisitor.fullName) setFullName(currentVisitor.fullName);
+    if (!phone && currentVisitor.phone) setPhone(currentVisitor.phone);
+    if (!email && currentVisitor.email) setEmail(currentVisitor.email);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentVisitor?.signedIn, currentVisitor?.phone]);
+  React.useEffect(() => {
+    if (confirmedOrder) return;
+    const t = setTimeout(() => {
+      if (fullName.trim() || phone.replace(/\D/g, '').length >= 10) identifyVisitor({ fullName, phone, email, city });
+    }, 800);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fullName, phone, email, city]);
+
+  // Admin can switch COD off live — fall back to UPI if it was selected
+  React.useEffect(() => {
+    if (!siteSettings.codEnabled && paymentMethod === 'cod') setPaymentMethod('upi');
+  }, [siteSettings.codEnabled, paymentMethod]);
+
+  if (!siteSettings.storeOpen && !confirmedOrder) {
+    return (
+      <div className="max-w-xl mx-auto py-24 px-4 text-center">
+        <h2 className="text-3xl font-serif font-semibold text-botanical-900 mb-3">Orders are paused</h2>
+        <p className="text-sm text-gray-600 mb-6">{siteSettings.closedMessage}</p>
+        <Link href="/shop" className="px-6 py-2.5 rounded-full bg-botanical-800 text-white text-sm hover:bg-botanical-900">
+          Continue browsing
+        </Link>
+      </div>
+    );
+  }
 
   if (cart.length === 0 && !confirmedOrder) {
     return (
@@ -131,7 +170,7 @@ export default function CheckoutPage() {
   // SUCCESS CONFIRMATION SCREEN
   if (confirmedOrder) {
     return (
-      <div className="min-h-screen bg-[#FCFBF7] py-16 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-sandal-50 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-12 border border-sandal-200 shadow-xl text-center space-y-6">
           <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center animate-bounce">
             <CheckCircle2 className="w-12 h-12" />
@@ -204,7 +243,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FCFBF7] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-sandal-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="pb-6 border-b border-sandal-200 mb-8">
           <span className="text-xs font-semibold uppercase tracking-widest text-botanical-700">
@@ -251,6 +290,7 @@ export default function CheckoutPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-sandal-300 text-sm focus:outline-none focus:ring-1 focus:ring-botanical-700"
                   />
+                  <p className="text-[11px] text-gray-400 mt-1">We save these details so our team can help you complete your order on WhatsApp.</p>
                 </div>
               </div>
 
@@ -375,6 +415,7 @@ export default function CheckoutPage() {
               </h3>
 
               <div className="space-y-3">
+                {siteSettings.codEnabled && (
                 <label
                   onClick={() => setPaymentMethod('cod')}
                   className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
@@ -401,6 +442,7 @@ export default function CheckoutPage() {
                     Zero Extra Fee
                   </span>
                 </label>
+                )}
 
                 <label
                   onClick={() => setPaymentMethod('upi')}

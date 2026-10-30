@@ -16,7 +16,7 @@ export default function AboutPage() {
   const { pageContents } = useStore();
 
   return (
-    <div className="w-full min-h-screen bg-[#FCFBF7] pb-24">
+    <div className="w-full min-h-screen bg-sandal-50 pb-24">
       {/* Header */}
       <div className="bg-botanical-900 text-white py-16 px-4 sm:px-6 lg:px-8 border-b border-botanical-800">
         <div className="max-w-4xl mx-auto text-center space-y-4">

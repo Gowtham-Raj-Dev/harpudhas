@@ -5,517 +5,337 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { withBasePath } from '@/data/products';
+import { ProductCard } from '@/components/ProductCard';
+import { productsFor, resolveHomeSection } from '@/lib/storeUtils';
+import { CategoryType } from '@/types/store';
 import {
   Sparkles,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  Star,
   ShoppingBag,
-  Heart,
-  Droplets,
   Leaf,
   ChevronDown,
-  Clock,
   Award,
   Truck,
   Tag,
+  Plus,
 } from 'lucide-react';
-import { CategoryType } from '@/types/store';
+
+const SectionHeading: React.FC<{ eyebrow?: string; title: string; subtitle?: string; align?: 'center' | 'left'; dark?: boolean }> = ({
+  eyebrow,
+  title,
+  subtitle,
+  align = 'center',
+  dark,
+}) => (
+  <div className={`${align === 'center' ? 'text-center mx-auto' : ''} max-w-2xl`}>
+    {eyebrow && (
+      <span className={`inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] font-semibold ${dark ? 'text-sandal-300' : 'text-sandal-700'}`}>
+        <span className={`h-px w-6 ${dark ? 'bg-sandal-400/60' : 'bg-sandal-500/60'}`} />
+        {eyebrow}
+        {align === 'center' && <span className={`h-px w-6 ${dark ? 'bg-sandal-400/60' : 'bg-sandal-500/60'}`} />}
+      </span>
+    )}
+    <h2 className={`mt-3 text-3xl sm:text-[42px] leading-[1.1] font-serif font-semibold ${dark ? 'text-white' : 'text-botanical-900'}`}>{title}</h2>
+    {subtitle && <p className={`mt-3 text-[15px] leading-relaxed ${dark ? 'text-sandal-100/75' : 'text-gray-600'}`}>{subtitle}</p>}
+  </div>
+);
 
 export default function HomePage() {
-  const { products, addToCart, wishlist, toggleWishlist, banners, pageContents } = useStore();
+  const { products, orders, addToCart, banners, pageContents, siteSettings } = useStore();
+  const home = pageContents.home;
+  const show = siteSettings.sections;
 
-  // Active home banners
-  const activeBanners = banners.filter(
-    (b) => b.isActive && (b.targetPage === 'all' || b.targetPage === 'home')
-  );
-
-  // Carousel slide index
+  const activeBanners = banners.filter((b) => b.isActive && (b.targetPage === 'all' || b.targetPage === 'home'));
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Auto-play carousel every 5 seconds
   useEffect(() => {
     if (activeBanners.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % activeBanners.length);
-    }, 5000);
+    const interval = setInterval(() => setCurrentSlide((prev) => (prev + 1) % activeBanners.length), 6000);
     return () => clearInterval(interval);
   }, [activeBanners.length]);
 
-  const nextSlide = () => {
-    if (activeBanners.length > 0) {
-      setCurrentSlide((prev) => (prev + 1) % activeBanners.length);
-    }
-  };
+  useEffect(() => {
+    if (currentSlide >= activeBanners.length) setCurrentSlide(0);
+  }, [activeBanners.length, currentSlide]);
 
-  const prevSlide = () => {
-    if (activeBanners.length > 0) {
-      setCurrentSlide((prev) => (prev - 1 + activeBanners.length) % activeBanners.length);
-    }
-  };
+  const go = (dir: 1 | -1) =>
+    activeBanners.length && setCurrentSlide((prev) => (prev + dir + activeBanners.length) % activeBanners.length);
 
   const [quizArea, setQuizArea] = useState<CategoryType>('Hair Care');
-  const [quizConcern, setQuizConcern] = useState<string>('growth');
+  const [quizConcern, setQuizConcern] = useState<string>('');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [selectedSizes, setSelectedSizes] = useState<Record<string, number>>({});
 
-  const handleSizeChange = (productId: string, sizeIdx: number) => {
-    setSelectedSizes((prev) => ({ ...prev, [productId]: sizeIdx }));
-  };
-
-  const featuredProducts = products.slice(0, 6);
+  const hp = siteSettings.homeProducts;
+  const featuredProducts = resolveHomeSection(products, orders, 'home-featured', hp['home-featured']);
+  const newProducts = resolveHomeSection(products, orders, 'home-new', hp['home-new']);
+  const quizRecommendations = resolveHomeSection(products, orders, 'home-quiz', hp['home-quiz'], quizArea);
+  const shopCount = productsFor(products, 'shop').length;
+  const gridCols = (n: 3 | 4) => (n === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3');
 
   const categories = [
-    {
-      title: 'Hair Care & Oils',
-      tamil: 'கூந்தல் பராமரிப்பு',
-      desc: 'Cold-pressed Hibiscus, Bhringraj & Shikakai formulas for thickness and root revival.',
-      image: '/images/hair-oil.jpg',
-      href: '/shop?category=Hair Care',
-      tag: 'Bestselling Oils',
-    },
-    {
-      title: 'Face Care & Radiance',
-      tamil: 'முகப்பொலிவு சிகிச்சை',
-      desc: 'Pure Kashmiri Saffron & Red Sandalwood for radiant, glass-like natural herbal glow.',
-      image: '/images/face-cream.jpg',
-      href: '/shop?category=Face Care',
-      tag: 'Kumkumadi Glow',
-    },
-    {
-      title: 'Skin & Body Rituals',
-      tamil: 'உடல் பாதுகாப்பு',
-      desc: 'Traditional 18-Herb Nalangu Maavu & Shea bath bars for whole-body rejuvenation.',
-      image: '/images/body-soap.jpg',
-      href: '/shop?category=Skin & Body',
-      tag: 'Ancestral Bath',
-    },
+    { title: 'Hair Care & Oils', tamil: 'கூந்தல் பராமரிப்பு', image: '/images/hair-oil.jpg', href: '/shop?category=Hair Care', cat: 'Hair Care' },
+    { title: 'Face Care & Radiance', tamil: 'முகப்பொலிவு', image: '/images/face-cream.jpg', href: '/shop?category=Face Care', cat: 'Face Care' },
+    { title: 'Skin & Body Rituals', tamil: 'உடல் பாதுகாப்பு', image: '/images/body-soap.jpg', href: '/shop?category=Skin & Body', cat: 'Skin & Body' },
   ];
 
-  const quizRecommendations = products.filter((p) => {
-    if (quizArea === 'Hair Care') return p.category === 'Hair Care';
-    if (quizArea === 'Face Care') return p.category === 'Face Care';
-    return p.category === 'Skin & Body';
-  }).slice(0, 2);
+  const concerns: Record<CategoryType, string[]> = {
+    'Hair Care': ['Hair fall & root strength', 'Premature greying', 'Dandruff & itchy scalp'],
+    'Face Care': ['Pigmentation & glow', 'Acne & oil control', 'Hydration & fine lines'],
+    'Skin & Body': ['Tan removal', 'Dry skin moisture', 'Traditional herbal bath'],
+  };
+
+  const usps = [
+    { icon: Leaf, title: home.usp1Title, desc: home.usp1Desc },
+    { icon: Award, title: home.usp2Title, desc: home.usp2Desc },
+    { icon: Truck, title: home.usp3Title, desc: home.usp3Desc },
+    { icon: ShieldCheck, title: home.usp4Title, desc: home.usp4Desc },
+  ];
+
+  const steps = [
+    { title: home.step1Title, desc: home.step1Desc },
+    { title: home.step2Title, desc: home.step2Desc },
+    { title: home.step3Title, desc: home.step3Desc },
+    { title: home.step4Title, desc: home.step4Desc },
+  ];
 
   const faqs = [
-    {
-      q: pageContents.home.faq1Q || 'How is Hàrpudha’s hair oil different from regular commercial oils?',
-      a: pageContents.home.faq1A || 'Unlike commercial oils that use liquid paraffin and artificial scents, our oils are prepared using 100% pure cold wood-pressed coconut and sesame base, slow-infused for 72 hours in heavy bronze urulis.',
-    },
-    {
-      q: pageContents.home.faq2Q || 'Are your products safe for sensitive and acne-prone skin?',
-      a: pageContents.home.faq2A || 'Yes, absolutely. Every formulation is free from parabens, phthalates, synthetic preservatives, and artificial colorants. We use natural herbs like wild turmeric, neem, and pure saffron.',
-    },
-    {
-      q: pageContents.home.faq3Q || 'How long does delivery take across India?',
-      a: pageContents.home.faq3A || 'We dispatch all orders within 24 hours of confirmation from our Pollachi apothecary via Delhivery Express or BlueDart. Deliveries to Tamil Nadu take 1-2 days; other states take 2-4 business days.',
-    },
-    {
-      q: pageContents.home.faq4Q || 'Can men and teenagers use these Siddha formulations?',
-      a: pageContents.home.faq4A || 'Yes! Traditional Siddha formulations are unisex and suitable for all age groups (above 3 years). Both men and women benefit equally from our hair oils, ubtans, and skin remedies.',
-    },
-  ];
+    { q: home.faq1Q, a: home.faq1A },
+    { q: home.faq2Q, a: home.faq2A },
+    { q: home.faq3Q, a: home.faq3A },
+    { q: home.faq4Q, a: home.faq4A },
+  ].filter((f) => f.q);
 
   return (
     <div className="w-full">
-      {/* 1. DYNAMIC AUTO-PLAYING HERO BANNER CAROUSEL */}
-      <section className="relative w-full bg-[#11241B] overflow-hidden">
-        {activeBanners.length === 0 ? (
-          // Default Hero Fallback if no banner active
-          <div className="relative min-h-[500px] lg:min-h-[580px] flex items-center justify-center text-center text-white px-4 py-20">
-            <Image
-              src={withBasePath('/images/hero-banner.jpg')}
-              alt="Harpudhas Siddha Botanicals"
-              fill
-              priority
-              className="object-cover opacity-35"
-            />
-            <div className="relative z-10 max-w-3xl mx-auto space-y-5">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-sandal-500/20 text-sandal-300 border border-sandal-400/30">
-                {pageContents.home.heroBadge}
-              </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold leading-tight">
-                {pageContents.home.heroTitle}
-              </h1>
-              <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed max-w-2xl mx-auto">
-                {pageContents.home.heroSubtitle}
-              </p>
-              <div className="pt-2">
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:bg-sandal-400 transition-all shadow-xl"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Shop Essentials</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Multi-Image Auto-Playing Slider
-          <div className="relative w-full min-h-[500px] sm:min-h-[560px] lg:min-h-[620px] flex items-center">
-            {activeBanners.map((banner, index) => {
-              const isCurrent = index === currentSlide;
-              const bannerImg = banner.imageUrl || '/images/hero-banner.jpg';
-
-              return (
-                <div
-                  key={banner.id}
-                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                    isCurrent ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
-                  }`}
-                >
-                  {/* Real Background Image with Gradient Overlay */}
-                  <Image
-                    src={withBasePath(bannerImg)}
-                    alt={banner.title}
-                    fill
-                    priority={index === 0}
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/35" />
-
-                  {/* Banner Content */}
-                  <div className="relative z-10 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center">
-                    <div className="max-w-2xl space-y-5 text-white py-16">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {banner.badge && (
-                          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-sandal-500 text-botanical-950 shadow-sm">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>{banner.badge}</span>
-                          </span>
-                        )}
-                        {banner.discountCode && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/20 text-sandal-200 border border-white/25">
-                            <Tag className="w-3 h-3 text-sandal-400" />
-                            <span>Use Code: {banner.discountCode}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight tracking-tight">
-                        {banner.title}
-                      </h2>
-
-                      <p className="text-base sm:text-lg text-sandal-100/90 leading-relaxed font-light max-w-xl">
-                        {banner.subtitle}
-                      </p>
-
-                      <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Link
-                          href={banner.buttonLink || '/shop'}
-                          className="px-8 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-xs uppercase tracking-wider hover:bg-sandal-400 transition-all shadow-xl flex items-center gap-2 group"
-                        >
-                          <span>{banner.buttonText || 'Shop Collection'}</span>
-                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                        </Link>
-
-                        <a
-                          href="#ayurvedic-quiz"
-                          className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs uppercase tracking-wider border border-white/25 transition-all backdrop-blur-xs"
-                        >
-                          Take Dosha Quiz
-                        </a>
-                      </div>
-                    </div>
+      {/* 1. HERO */}
+      {show.homeHero && (
+        <section className="relative w-full bg-botanical-900 overflow-hidden">
+          {activeBanners.length === 0 ? (
+            <div className="relative min-h-[560px] lg:min-h-[640px] flex items-center">
+              <Image src={withBasePath('/images/hero-banner.jpg')} alt="Hàrpudha's" fill priority className="object-cover opacity-40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-botanical-950 via-botanical-900/80 to-transparent" />
+              <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
+                <div className="max-w-2xl space-y-6 text-white">
+                  <span className="inline-block px-4 py-1.5 rounded-full text-xs tracking-wide bg-white/10 text-sandal-200 border border-white/15 backdrop-blur">
+                    {home.heroBadge}
+                  </span>
+                  <h1 className="text-4xl sm:text-6xl font-serif font-semibold leading-[1.05]">{home.heroTitle}</h1>
+                  <p className="text-base sm:text-lg text-sandal-100/80 leading-relaxed">{home.heroSubtitle}</p>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Link href="/shop" className="btn-shimmer inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300">
+                      <ShoppingBag className="w-4 h-4" />
+                      {home.heroBtn1}
+                    </Link>
+                    {show.homeQuiz && (
+                      <a href="#routine-finder" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10">
+                        {home.heroBtn2}
+                      </a>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-
-            {/* Slider Navigation Arrows (If more than 1 banner) */}
-            {activeBanners.length > 1 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/70 text-white border border-white/20 transition-all shadow-lg focus:outline-none"
-                  aria-label="Previous Slide"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/70 text-white border border-white/20 transition-all shadow-lg focus:outline-none"
-                  aria-label="Next Slide"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-
-                {/* Slider Dot Indicators */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
-                  {activeBanners.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        currentSlide === idx ? 'w-8 bg-sandal-400' : 'w-2.5 bg-white/40 hover:bg-white/70'
-                      }`}
-                      aria-label={`Go to slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* 2. VALUE PROPOSITION BAR */}
-      <div className="w-full bg-[#F7F3E8] border-b border-sandal-200/80 py-5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="flex items-center justify-center gap-2.5 p-2">
-              <Leaf className="w-5 h-5 text-emerald-800 flex-shrink-0" />
-              <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp1Title || '100% Herbal Siddha'}</h4>
-                <p className="text-[11px] text-gray-500">{pageContents.home.usp1Desc || 'Nil Sulfates, Parabens or Chemicals'}</p>
               </div>
             </div>
-
-            <div className="flex items-center justify-center gap-2.5 p-2">
-              <Award className="w-5 h-5 text-amber-700 flex-shrink-0" />
-              <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp2Title || 'Bronze Uruli Alchemy'}</h4>
-                <p className="text-[11px] text-gray-500">{pageContents.home.usp2Desc || '72-Hour Traditional Slow-Cooking'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2.5 p-2">
-              <Truck className="w-5 h-5 text-emerald-800 flex-shrink-0" />
-              <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp3Title || 'Free Express Delivery'}</h4>
-                <p className="text-[11px] text-gray-500">{pageContents.home.usp3Desc || 'On all orders above ₹499 in India'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2.5 p-2">
-              <ShieldCheck className="w-5 h-5 text-amber-700 flex-shrink-0" />
-              <div className="text-left">
-                <h4 className="text-xs font-bold text-botanical-900">{pageContents.home.usp4Title || 'Lab Batch Certified'}</h4>
-                <p className="text-[11px] text-gray-500">{pageContents.home.usp4Desc || 'Direct From Pollachi Farmstead'}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. CATEGORIES SECTION (Editable Content via Admin) */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-            {pageContents.home.catEyebrow || 'Ancestral Collections'}
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-            {pageContents.home.catTitle}
-          </h2>
-          <p className="text-sm text-gray-600 mt-2">
-            {pageContents.home.catSubtitle}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {categories.map((cat) => (
-            <Link
-              key={cat.title}
-              href={cat.href}
-              className="group relative overflow-hidden rounded-3xl bg-white border border-sandal-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
-            >
-              <div className="relative h-64 w-full overflow-hidden bg-sandal-50">
-                <Image
-                  src={withBasePath(cat.image)}
-                  alt={cat.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-106"
-                />
-                <div className="absolute top-3 right-3 bg-botanical-900/85 backdrop-blur-xs text-sandal-200 text-xs px-3 py-1 rounded-full font-semibold">
-                  {cat.tag}
-                </div>
-              </div>
-
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <span className="text-xs font-bold text-emerald-800">{cat.tamil}</span>
-                  <h3 className="text-xl font-serif font-bold text-botanical-900 mt-0.5 group-hover:text-botanical-700 transition-colors">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                    {cat.desc}
-                  </p>
-                </div>
-                <div className="mt-5 pt-3 border-t border-sandal-100 flex items-center text-xs font-bold text-botanical-800 group-hover:text-botanical-950">
-                  <span>Explore Remedies</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-1" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. BESTSELLING HERBAL FORMULATIONS */}
-      <section className="py-16 bg-[#F7F3E8] border-y border-sandal-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-                {pageContents.home.prodEyebrow || 'Community Favorites'}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-                {pageContents.home.prodTitle}
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {pageContents.home.prodSubtitle}
-              </p>
-            </div>
-            <Link
-              href="/shop"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-botanical-800 text-botanical-900 text-xs font-bold uppercase tracking-wider hover:bg-botanical-800 hover:text-white transition-colors"
-            >
-              <span>{pageContents.home.prodBtnText || 'View All'} ({products.length}) Products</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {/* Product Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((prod) => {
-              const currentSizeIdx = selectedSizes[prod.id] || 0;
-              const currentSize = prod.sizeOptions[currentSizeIdx] || prod.sizeOptions[0];
-              const isWishlisted = wishlist.includes(prod.id);
-
-              return (
-                <div
-                  key={prod.id}
-                  className="group bg-white rounded-3xl border border-sandal-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative"
-                >
-                  {/* Badges & Wishlist */}
-                  <div className="absolute top-3.5 left-3.5 z-10">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider bg-botanical-800 text-sandal-100 shadow-xs">
-                      {prod.badge}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => toggleWishlist(prod.id)}
-                    className="absolute top-3.5 right-3.5 z-10 p-2 rounded-full bg-white/90 backdrop-blur-xs text-gray-500 hover:text-rose-500 hover:bg-white shadow-xs transition-colors"
-                    title="Save to Wishlist"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isWishlisted ? 'fill-rose-500 text-rose-500' : ''
-                      }`}
-                    />
-                  </button>
-
-                  {/* Product Image */}
-                  <Link
-                    href={`/product/${prod.id}`}
-                    className="relative aspect-square w-full overflow-hidden bg-sandal-50"
+          ) : (
+            <div className="relative w-full min-h-[560px] lg:min-h-[640px]">
+              {activeBanners.map((banner, index) => {
+                const isCurrent = index === currentSlide;
+                return (
+                  <div
+                    key={banner.id}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
                   >
                     <Image
-                      src={withBasePath(prod.image)}
-                      alt={prod.name}
+                      src={withBasePath(banner.imageUrl || '/images/hero-banner.jpg')}
+                      alt={banner.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-106"
+                      priority={index === 0}
+                      className={`object-cover transition-transform duration-[7000ms] ease-out ${isCurrent ? 'scale-105' : 'scale-100'}`}
                     />
-                  </Link>
-
-                  {/* Product Info */}
-                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                        <span className="text-emerald-800 font-bold">{prod.tamilName}</span>
-                        <div className="flex items-center gap-1 text-amber-500 font-bold">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span>{prod.rating.toFixed(1)}</span>
-                          <span className="text-gray-400 font-normal">({prod.reviews})</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-botanical-950/95 via-botanical-950/60 to-botanical-950/10" />
+                    <div className="relative z-10 max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center">
+                      <div className={`max-w-2xl space-y-6 text-white py-20 transition-all duration-700 ${isCurrent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {banner.badge && (
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] bg-sandal-500 text-botanical-950">
+                              <Sparkles className="w-3.5 h-3.5" />
+                              {banner.badge}
+                            </span>
+                          )}
+                          {banner.discountCode && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono bg-white/10 text-sandal-100 border border-white/20 backdrop-blur">
+                              <Tag className="w-3 h-3" />
+                              {banner.discountCode}
+                            </span>
+                          )}
                         </div>
-                      </div>
-
-                      <Link href={`/product/${prod.id}`}>
-                        <h3 className="font-serif font-bold text-lg text-botanical-900 group-hover:text-botanical-700 transition-colors line-clamp-1">
-                          {prod.name}
-                        </h3>
-                      </Link>
-
-                      <p className="text-xs text-gray-600 line-clamp-2 mt-1.5 leading-relaxed">
-                        {prod.shortDesc}
-                      </p>
-                    </div>
-
-                    {/* Size Selector */}
-                    {prod.sizeOptions && prod.sizeOptions.length > 1 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {prod.sizeOptions.map((opt, sIdx) => (
-                          <button
-                            key={opt.label}
-                            onClick={() => handleSizeChange(prod.id, sIdx)}
-                            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${
-                              currentSizeIdx === sIdx
-                                ? 'bg-botanical-800 text-white border-botanical-800'
-                                : 'bg-sandal-50 text-gray-700 border-sandal-200 hover:border-botanical-600'
-                            }`}
+                        <h2 className="text-4xl sm:text-6xl font-serif font-semibold leading-[1.05] tracking-tight">{banner.title}</h2>
+                        <p className="text-base sm:text-lg text-sandal-100/80 leading-relaxed max-w-xl">{banner.subtitle}</p>
+                        <div className="pt-2 flex flex-wrap items-center gap-3">
+                          <Link
+                            href={banner.buttonLink || '/shop'}
+                            className="btn-shimmer group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-sm hover:bg-sandal-300 transition-colors"
                           >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Price & Add to Cart */}
-                    <div className="pt-3 border-t border-sandal-100 flex items-center justify-between">
-                      <div>
-                        <div className="text-xs text-gray-400 line-through">₹{prod.mrp}</div>
-                        <div className="text-lg font-bold text-botanical-900">
-                          ₹{currentSize?.price || prod.price}
+                            {banner.buttonText || 'Shop Collection'}
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                          </Link>
+                          {show.homeQuiz && (
+                            <a href="#routine-finder" className="px-7 py-3.5 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10 backdrop-blur">
+                              {home.heroBtn2}
+                            </a>
+                          )}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                );
+              })}
 
-                      <button
-                        onClick={() => addToCart(prod.id, currentSizeIdx, 1)}
-                        className="px-4 py-2.5 rounded-xl bg-botanical-800 text-white text-xs font-bold hover:bg-botanical-900 transition-colors flex items-center gap-1.5 shadow-sm"
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Add</span>
+              {activeBanners.length > 1 && (
+                <div className="absolute bottom-8 inset-x-0 z-20">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {activeBanners.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentSlide(idx)}
+                          className={`h-1 rounded-full transition-all duration-500 ${currentSlide === idx ? 'w-10 bg-sandal-400' : 'w-5 bg-white/30 hover:bg-white/60'}`}
+                          aria-label={`Slide ${idx + 1}`}
+                        />
+                      ))}
+                      <span className="ml-3 text-xs text-white/60 tabular-nums">
+                        {String(currentSlide + 1).padStart(2, '0')} / {String(activeBanners.length).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => go(-1)} className="w-11 h-11 rounded-full border border-white/25 text-white hover:bg-white/10 flex items-center justify-center" aria-label="Previous">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={() => go(1)} className="w-11 h-11 rounded-full border border-white/25 text-white hover:bg-white/10 flex items-center justify-center" aria-label="Next">
+                        <ChevronRight className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Marquee */}
+      {home.marqueeText && (
+        <div className="w-full overflow-hidden bg-sandal-500 text-botanical-950 py-2.5">
+          <div className="marquee-track text-xs font-semibold tracking-[0.16em] uppercase whitespace-nowrap">
+            <span className="px-6">{home.marqueeText}</span>
+            <span className="px-6">{home.marqueeText}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 2. USP BAR */}
+      {show.homeUsp && (
+        <div className="w-full bg-white border-b border-sandal-200/70">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4 divide-x divide-sandal-200/70">
+            {usps.map(({ icon: Icon, title, desc }, i) => (
+              <div key={i} className="flex items-center gap-3.5 py-6 px-4">
+                <div className="w-11 h-11 rounded-full bg-sandal-100 text-botanical-800 flex items-center justify-center shrink-0">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-botanical-900">{title}</h4>
+                  <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. CATEGORIES */}
+      {show.homeCategories && (
+        <section className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow={home.catEyebrow} title={home.catTitle} subtitle={home.catSubtitle} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12">
+            {categories.map((cat) => {
+              const count = productsFor(products, 'shop').filter((p) => p.category === cat.cat).length;
+              return (
+                <Link key={cat.title} href={cat.href} className="group relative h-[420px] rounded-[28px] overflow-hidden">
+                  <Image src={withBasePath(cat.image)} alt={cat.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-botanical-950/90 via-botanical-950/20 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-7 text-white">
+                    <span className="text-xs text-sandal-300">{cat.tamil}</span>
+                    <h3 className="text-2xl font-serif font-semibold mt-1">{cat.title}</h3>
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className="text-xs text-white/70">{count} formulations</span>
+                      <span className="w-10 h-10 rounded-full bg-white text-botanical-900 flex items-center justify-center group-hover:bg-sandal-500 transition-colors">
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 5. INTERACTIVE DOSHA QUIZ */}
-      <section id="ayurvedic-quiz" className="py-20 bg-botanical-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-5 space-y-5">
-              <span className="text-xs uppercase tracking-widest text-sandal-400 font-bold">
-                {pageContents.home.quizEyebrow || 'Ancestral Diagnostic'}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
-                {pageContents.home.quizTitle || 'Discover Your Tailored Siddha Routine'}
-              </h2>
-              <p className="text-sm text-sandal-200/80 leading-relaxed">
-                {pageContents.home.quizSubtitle || 'Take 30 seconds to select your primary focus area. Our herbal experts have mapped traditional botanicals to restore natural equilibrium.'}
-              </p>
+      {/* 4. BESTSELLERS */}
+      {show.homeFeatured && featuredProducts.length > 0 && (
+        <section id="home-featured" className="py-20 sm:py-24 bg-sandal-100/60 border-y border-sandal-200/70 scroll-mt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+              <SectionHeading eyebrow={home.prodEyebrow} title={home.prodTitle} subtitle={home.prodSubtitle} align="left" />
+              <Link
+                href="/shop"
+                className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-botanical-800/80 text-botanical-900 text-sm font-medium hover:bg-botanical-800 hover:text-white transition-colors"
+              >
+                {home.prodBtnText} ({shopCount})
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className={`grid grid-cols-1 gap-6 ${gridCols(hp['home-featured'].columns)}`}>
+              {featuredProducts.map((prod) => (
+                <ProductCard key={prod.id} product={prod} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-              <div className="space-y-2 pt-2">
-                <label className="text-xs text-sandal-300 font-semibold uppercase">1. Focus Area</label>
+      {/* 5. NEW ARRIVALS */}
+      {show.homeNew && newProducts.length > 0 && (
+        <section id="home-new" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+          <SectionHeading eyebrow="Just Launched" title={siteSettings.newSectionTitle} subtitle={siteSettings.newSectionSubtitle} />
+          <div className={`grid grid-cols-1 gap-5 mt-12 ${gridCols(hp['home-new'].columns)}`}>
+            {newProducts.map((prod) => (
+              <ProductCard key={prod.id} product={prod} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 6. ROUTINE FINDER */}
+      {show.homeQuiz && (
+        <section id="routine-finder" className="relative py-20 sm:py-24 bg-botanical-900 text-white overflow-hidden scroll-mt-20">
+          <div className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full bg-sandal-500/10 blur-3xl pointer-events-none" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 space-y-8">
+              <SectionHeading eyebrow={home.quizEyebrow} title={home.quizTitle} subtitle={home.quizSubtitle} align="left" dark />
+              <div className="space-y-3">
+                <p className="text-[11px] text-sandal-300 font-semibold uppercase tracking-[0.2em]">01 · Focus area</p>
                 <div className="grid grid-cols-3 gap-2">
-                  {(['Hair Care', 'Face Care', 'Skin & Body'] as CategoryType[]).map((cat) => (
+                  {(Object.keys(concerns) as CategoryType[]).map((cat) => (
                     <button
                       key={cat}
-                      onClick={() => setQuizArea(cat)}
-                      className={`p-2.5 rounded-xl text-xs font-semibold transition-all border ${
-                        quizArea === cat
-                          ? 'bg-sandal-500 text-botanical-950 border-sandal-400 shadow-md'
-                          : 'bg-botanical-800/80 text-sandal-100 border-botanical-700 hover:bg-botanical-700'
+                      onClick={() => {
+                        setQuizArea(cat);
+                        setQuizConcern('');
+                      }}
+                      className={`py-3 rounded-xl text-xs font-semibold transition-all border ${
+                        quizArea === cat ? 'bg-sandal-500 text-botanical-950 border-sandal-500' : 'border-white/15 text-sandal-100 hover:bg-white/5'
                       }`}
                     >
                       {cat}
@@ -523,223 +343,109 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-
-              <div className="space-y-2 pt-2">
-                <label className="text-xs text-sandal-300 font-semibold uppercase">2. Concern</label>
+              <div className="space-y-3">
+                <p className="text-[11px] text-sandal-300 font-semibold uppercase tracking-[0.2em]">02 · Your concern</p>
                 <div className="flex flex-wrap gap-2">
-                  {quizArea === 'Hair Care' && (
-                    <>
-                      {['Hair Fall & Root Strength', 'Premature Greying & Shine', 'Dandruff & Scalp Itch'].map(
-                        (c) => (
-                          <button
-                            key={c}
-                            onClick={() => setQuizConcern(c)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                              quizConcern === c
-                                ? 'bg-emerald-700 text-white border-emerald-500'
-                                : 'bg-botanical-800 text-sandal-200 border-botanical-700 hover:bg-botanical-700'
-                            }`}
-                          >
-                            {c}
-                          </button>
-                        )
-                      )}
-                    </>
-                  )}
-                  {quizArea === 'Face Care' && (
-                    <>
-                      {['Hyperpigmentation & Glow', 'Acne & Sebum Control', 'Deep Hydration & Fine Lines'].map(
-                        (c) => (
-                          <button
-                            key={c}
-                            onClick={() => setQuizConcern(c)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                              quizConcern === c
-                                ? 'bg-emerald-700 text-white border-emerald-500'
-                                : 'bg-botanical-800 text-sandal-200 border-botanical-700 hover:bg-botanical-700'
-                            }`}
-                          >
-                            {c}
-                          </button>
-                        )
-                      )}
-                    </>
-                  )}
-                  {quizArea === 'Skin & Body' && (
-                    <>
-                      {['Tan Removal & Brightening', '24-Hour Dry Skin Moisture', 'Traditional Herbal Bath'].map(
-                        (c) => (
-                          <button
-                            key={c}
-                            onClick={() => setQuizConcern(c)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                              quizConcern === c
-                                ? 'bg-emerald-700 text-white border-emerald-500'
-                                : 'bg-botanical-800 text-sandal-200 border-botanical-700 hover:bg-botanical-700'
-                            }`}
-                          >
-                            {c}
-                          </button>
-                        )
-                      )}
-                    </>
-                  )}
+                  {concerns[quizArea].map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setQuizConcern(c)}
+                      className={`px-4 py-2 rounded-full text-xs border transition-colors ${
+                        quizConcern === c ? 'bg-white text-botanical-900 border-white' : 'border-white/15 text-sandal-100 hover:bg-white/5'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Quiz Recommendation Cards */}
-            <div className="lg:col-span-7 bg-botanical-800/60 p-6 sm:p-8 rounded-3xl border border-botanical-700/80">
+            <div className="lg:col-span-7 rounded-[28px] bg-white/[0.04] border border-white/10 p-6 sm:p-8 backdrop-blur">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <span className="text-xs font-semibold text-emerald-400">Match Found</span>
-                  <h3 className="text-xl font-serif font-bold text-white">{pageContents.home.quizMatchTitle || 'Recommended Routine'}</h3>
+                  <span className="text-[11px] uppercase tracking-[0.2em] text-emerald-300">Your match</span>
+                  <h3 className="text-2xl font-serif font-semibold">{home.quizMatchTitle}</h3>
                 </div>
-                <span className="text-xs bg-sandal-500/20 text-sandal-300 px-3 py-1 rounded-full font-medium border border-sandal-400/30">
-                  {quizArea}
+                <span className="text-xs px-3 py-1 rounded-full bg-sandal-500/15 text-sandal-200 border border-sandal-400/30">
+                  {quizConcern || quizArea}
                 </span>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {quizRecommendations.map((prod) => (
-                  <div
-                    key={prod.id}
-                    className="bg-botanical-900 rounded-2xl p-4 border border-botanical-700 flex flex-col justify-between"
-                  >
-                    <div className="flex gap-3">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-botanical-800 flex-shrink-0">
-                        <Image
-                          src={withBasePath(prod.image)}
-                          alt={prod.name}
-                          fill
-                          className="object-cover"
-                        />
+              {quizRecommendations.length === 0 ? (
+                <p className="text-sm text-sandal-100/60 py-10 text-center">No products assigned to the routine finder for {quizArea} yet.</p>
+              ) : (
+                <div className={`grid grid-cols-1 gap-4 ${quizRecommendations.length > 2 ? 'sm:grid-cols-2 xl:grid-cols-3' : 'sm:grid-cols-2'}`}>
+                  {quizRecommendations.map((prod) => (
+                    <div key={prod.id} className="rounded-2xl bg-botanical-950/50 border border-white/10 overflow-hidden">
+                      <div className="relative h-44">
+                        <Image src={withBasePath(prod.image)} alt={prod.name} fill className="object-cover" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[10px] text-emerald-400 font-bold uppercase">
-                          {prod.badge}
-                        </span>
-                        <h4 className="text-xs font-bold text-white line-clamp-1">{prod.name}</h4>
-                        <p className="text-[11px] text-sandal-200/70 line-clamp-2 mt-1">
-                          {prod.shortDesc}
-                        </p>
+                      <div className="p-4 space-y-3">
+                        <div>
+                          <span className="text-[10px] text-emerald-300 font-semibold uppercase tracking-wider">{prod.badge}</span>
+                          <h4 className="text-sm font-semibold line-clamp-1 mt-0.5">{prod.name}</h4>
+                          <p className="text-xs text-sandal-100/60 line-clamp-2 mt-1">{prod.shortDesc}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-base font-semibold text-sandal-300">₹{prod.price}</span>
+                          <button
+                            onClick={() => addToCart(prod.id, 0, 1)}
+                            className="px-4 py-2 rounded-full bg-sandal-500 text-botanical-950 font-semibold text-xs hover:bg-sandal-300 flex items-center gap-1.5"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Add to routine
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="mt-4 pt-3 border-t border-botanical-800 flex items-center justify-between">
-                      <span className="text-sm font-bold text-sandal-300">₹{prod.price}</span>
-                      <button
-                        onClick={() => addToCart(prod.id, 0, 1)}
-                        className="px-3.5 py-1.5 rounded-lg bg-sandal-500 text-botanical-950 font-bold text-xs hover:bg-sandal-400 transition-colors flex items-center gap-1"
-                      >
-                        <ShoppingBag className="w-3 h-3" />
-                        <span>Add To Basket</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. OUR ANCESTRAL 4-STAGE HERBAL PROCESS */}
-      <section className="py-20 bg-sandal-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-              {pageContents.home.processEyebrow || 'The Artisan Process'}
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-botanical-900 mt-1">
-              {pageContents.home.processTitle}
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              {pageContents.home.processSubtitle}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
-                1
-              </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step1Title || 'Wild Herb Foraging'}</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                {pageContents.home.step1Desc || 'Fresh red hibiscus, karisalankanni, and vetiver roots harvested at dawn from Pollachi foothill groves.'}
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
-                2
-              </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step2Title || 'Cold Wood-Milling'}</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                {pageContents.home.step2Desc || 'Virgin coconut and gingelly oils extracted via slow wooden vaagai chekku mills with zero thermal degradation.'}
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
-                3
-              </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step3Title || 'Bronze Uruli Infusion'}</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                {pageContents.home.step3Desc || 'Botanicals slow-simmered in heirloom heavy bronze vats for 72 hours under constant gentle stirring.'}
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-sandal-200 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center font-bold">
-                4
-              </div>
-              <h3 className="font-serif font-bold text-base text-botanical-900">{pageContents.home.step4Title || 'Lab Batch Certified'}</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                {pageContents.home.step4Desc || 'Independently tested for zero heavy metals, zero microbes, and packaged in dark UV-protective glass bottles.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. FREQUENTLY ASKED QUESTIONS */}
-      <section className="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase tracking-widest text-botanical-700 font-bold">
-            {pageContents.home.faqEyebrow || 'Got Questions?'}
-          </span>
-          <h2 className="text-3xl font-serif font-bold text-botanical-900 mt-1">
-            {pageContents.home.faqTitle || 'Frequently Asked Questions'}
-          </h2>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <div
-              key={faq.q}
-              className="border border-sandal-200 rounded-2xl overflow-hidden bg-white shadow-xs"
-            >
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full p-5 text-left flex items-center justify-between font-serif font-bold text-botanical-900 hover:text-botanical-700 transition-colors"
-              >
-                <span>{faq.q}</span>
-                <ChevronDown
-                  className={`w-5 h-5 text-sandal-600 transition-transform ${
-                    openFaq === i ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              {openFaq === i && (
-                <div className="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-sandal-100 pt-3">
-                  {faq.a}
+                  ))}
                 </div>
               )}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
+      {/* 7. PROCESS */}
+      {show.homeProcess && (
+        <section className="py-20 sm:py-24 bg-sandal-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeading eyebrow={home.processEyebrow} title={home.processTitle} subtitle={home.processSubtitle} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
+              {steps.map((s, i) => (
+                <div key={i} className="relative p-7 rounded-[24px] bg-white border border-sandal-200/80">
+                  <span className="font-serif text-5xl font-semibold text-sandal-300">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 className="mt-4 font-serif text-xl font-semibold text-botanical-900">{s.title}</h3>
+                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 8. FAQ */}
+      {show.homeFaq && faqs.length > 0 && (
+        <section className="py-20 sm:py-24 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow={home.faqEyebrow} title={home.faqTitle} />
+          <div className="mt-12 divide-y divide-sandal-200 border-y border-sandal-200">
+            {faqs.map((faq, i) => (
+              <div key={i}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full py-5 text-left flex items-center justify-between gap-6 font-serif text-lg font-semibold text-botanical-900"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 shrink-0 text-sandal-600 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                <div className={`grid transition-all duration-300 ${openFaq === i ? 'grid-rows-[1fr] opacity-100 pb-5' : 'grid-rows-[0fr] opacity-0'}`}>
+                  <p className="overflow-hidden text-sm text-gray-600 leading-relaxed">{faq.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

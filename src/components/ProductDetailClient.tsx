@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/context/StoreContext';
 import { withBasePath } from '@/data/products';
 import { BannerDisplay } from '@/components/BannerDisplay';
+import { productsFor, productHref, isOutOfStock } from '@/lib/storeUtils';
 import {
   Star,
   ShoppingBag,
@@ -25,15 +26,21 @@ import {
 
 export default function ProductDetailClient({ productId }: { productId: string }) {
   const router = useRouter();
-  const { products, addToCart, wishlist, toggleWishlist, triggerToast } = useStore();
+  const { products, addToCart, wishlist, toggleWishlist, triggerToast, trackProductView } = useStore();
 
-  const product = products.find((p) => p.id === productId) || products[0];
+  const found = products.find((p) => p.id === productId);
+  const product = found && found.isVisible !== false ? found : undefined;
 
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'ingredients' | 'ritual' | 'reviews'>('desc');
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (product) trackProductView(product);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
 
   if (!product) {
     return (
@@ -49,9 +56,10 @@ export default function ProductDetailClient({ productId }: { productId: string }
   const selectedSize = product.sizeOptions[selectedSizeIndex] || product.sizeOptions[0];
   const isWishlisted = wishlist.includes(product.id);
   const discountPct = Math.round(((product.mrp - selectedSize.price) / product.mrp) * 100);
+  const soldOut = isOutOfStock(product);
 
-  // Related products
-  const relatedProducts = products
+  // Related products (only those the admin placed in "Related Products")
+  const relatedProducts = productsFor(products, 'product-related')
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
 
@@ -83,7 +91,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#FCFBF7] pb-24">
+    <div className="w-full min-h-screen bg-sandal-50 pb-24">
       {/* Target Banner for Product Page */}
       <BannerDisplay page="product" />
 
@@ -256,25 +264,31 @@ export default function ProductDetailClient({ productId }: { productId: string }
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    In Stock & Ready to Dispatch
-                  </span>
+                  {soldOut ? (
+                    <span className="text-xs text-rose-700 font-semibold">Currently out of stock</span>
+                  ) : (
+                    <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      In Stock & Ready to Dispatch
+                    </span>
+                  )}
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button
+                  disabled={soldOut}
                   onClick={() => addToCart(product.id, selectedSizeIndex, qty)}
-                  className="w-full py-3.5 rounded-full bg-botanical-800 text-white font-semibold text-sm hover:bg-botanical-900 transition-colors shadow-md flex items-center justify-center gap-2"
+                  className="disabled:opacity-40 disabled:cursor-not-allowed w-full py-3.5 rounded-full bg-botanical-800 text-white font-semibold text-sm hover:bg-botanical-900 transition-colors shadow-md flex items-center justify-center gap-2"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Add to Basket</span>
                 </button>
                 <button
+                  disabled={soldOut}
                   onClick={handleBuyNow}
-                  className="w-full py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-sm hover:bg-sandal-400 transition-colors shadow-md flex items-center justify-center gap-2"
+                  className="disabled:opacity-40 disabled:cursor-not-allowed w-full py-3.5 rounded-full bg-sandal-500 text-botanical-950 font-bold text-sm hover:bg-sandal-400 transition-colors shadow-md flex items-center justify-center gap-2"
                 >
                   <span>Buy Now</span>
                   <ArrowRight className="w-4 h-4" />
@@ -458,7 +472,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
               {relatedProducts.map((rel) => (
                 <Link
                   key={rel.id}
-                  href={`/product/${rel.id}`}
+                  href={productHref(rel.id)}
                   className="group bg-white rounded-2xl border border-sandal-200 p-4 shadow-xs hover:shadow-md transition-all flex items-center gap-4"
                 >
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-sandal-50 flex-shrink-0">

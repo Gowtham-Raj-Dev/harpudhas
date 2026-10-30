@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
 import { withBasePath } from '@/data/products';
+import { ProductCard } from '@/components/ProductCard';
+import { productsFor, productHref } from '@/lib/storeUtils';
 import {
   ShoppingBag,
   Trash2,
@@ -35,6 +37,9 @@ export default function CartPage() {
   } = useStore();
 
   const [inputCode, setInputCode] = useState('');
+  const upsell = productsFor(products, 'cart-upsell')
+    .filter((p) => !cart.some((c) => c.id === p.id))
+    .slice(0, 4);
 
   const threshold = headerConfig.freeShippingThreshold || 499;
   const remainingForFreeShipping = Math.max(0, threshold - cartTotals.subtotal);
@@ -49,7 +54,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#FCFBF7] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full min-h-screen bg-sandal-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-sandal-200 mb-8 gap-4">
@@ -138,7 +143,7 @@ export default function CartPage() {
                           <span className="text-[10px] font-bold text-emerald-800 uppercase">
                             {product.category}
                           </span>
-                          <Link href={`/product/${product.id}`}>
+                          <Link href={productHref(product.id)}>
                             <h3 className="font-serif font-bold text-base text-botanical-900 hover:text-botanical-700 transition-colors">
                               {product.name}
                             </h3>
@@ -306,6 +311,17 @@ export default function CartPage() {
                   <span>Secure 256-Bit Encrypted Indian Checkout</span>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {upsell.length > 0 && (
+          <div className="mt-16">
+            <h3 className="text-2xl font-serif font-semibold text-botanical-900 mb-6">You may also like</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {upsell.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
             </div>
           </div>
         )}

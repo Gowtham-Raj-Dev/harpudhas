@@ -45,6 +45,8 @@ jobs:
       - name: Build Next.js Static Export
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages_config.outputs.base_path }}
+          # Optional: Settings → Secrets and variables → Actions → Variables → WEBHOOK_URL
+          NEXT_PUBLIC_WEBHOOK_URL: ${{ vars.WEBHOOK_URL }}
         run: npm run build
 
       - name: Ensure .nojekyll exists in out/

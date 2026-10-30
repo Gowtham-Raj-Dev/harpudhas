@@ -11,6 +11,15 @@ export interface SizeOption {
   price: number;
 }
 
+// Where a product is allowed to appear on the storefront
+export type ProductPlacement =
+  | 'home-featured'
+  | 'home-new'
+  | 'home-quiz'
+  | 'shop'
+  | 'product-related'
+  | 'cart-upsell';
+
 export interface Product {
   id: string;
   name: string;
@@ -28,6 +37,161 @@ export interface Product {
   ingredients: string[];
   ritual: string;
   inStock?: boolean;
+  // Admin-controlled visibility & merchandising
+  isVisible?: boolean;
+  placements?: ProductPlacement[];
+  stock?: number;
+  sku?: string;
+  sortOrder?: number;
+  createdAt?: string;
+}
+
+export interface CustomerRecord {
+  id: string; // normalised phone digits
+  fullName: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  landmark?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  tags: string[];
+  notes: string;
+  createdAt: string;
+  source: 'order' | 'manual' | 'signup';
+}
+
+// ---------- Customer journey ----------
+
+export type JourneyStage = 'browsing' | 'viewed_product' | 'added_to_cart' | 'checkout_started' | 'details_entered' | 'ordered';
+
+export interface JourneyEvent {
+  type: JourneyStage | 'page_view' | 'removed_from_cart' | 'signed_in';
+  at: string;
+  label: string;
+}
+
+export type FollowUpStatus = 'new' | 'contacted' | 'converted' | 'not_interested';
+
+export interface VisitorJourney {
+  id: string;
+  firstSeen: string;
+  lastSeen: string;
+  stage: JourneyStage;
+  reached: Partial<Record<JourneyStage, string>>; // first time each stage was reached
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  city?: string;
+  signedIn?: boolean;
+  signedInAt?: string;
+  cart: { productId: string; name: string; size: string; qty: number; price: number }[];
+  cartValue: number;
+  viewedProducts: string[];
+  orderIds: string[];
+  pageViews: number;
+  source: string;
+  device: string;
+  events: JourneyEvent[];
+  followUp: { status: FollowUpStatus; note: string; contactCount: number; lastContactedAt?: string };
+}
+
+// ---------- Integrations ----------
+
+export type WebhookEvent =
+  | 'order.created'
+  | 'order.status_changed'
+  | 'customer.stage_changed'
+  | 'customer.created'
+  | 'product.created'
+  | 'product.updated'
+  | 'product.deleted'
+  | 'sync.full'
+  | 'webhook.test';
+
+export interface WebhookConfig {
+  enabled: boolean;
+  url: string;
+  secret: string; // used to sign payloads (HMAC-SHA256)
+  events: Record<Exclude<WebhookEvent, 'sync.full' | 'webhook.test'>, boolean>;
+  stripUploadedImages: boolean;
+  lastFullSync?: string;
+}
+
+export interface WebhookLogEntry {
+  id: string;
+  event: WebhookEvent;
+  timestamp: string;
+  status: 'success' | 'failed' | 'sent';
+  httpStatus?: number;
+  error?: string;
+  bytes: number;
+  summary: string;
+  payload?: string; // kept (if small) so failed deliveries can be retried
+}
+
+export interface DeliveryPartner {
+  id: string;
+  provider: string;
+  enabled: boolean;
+  isDefault: boolean;
+  mode: 'test' | 'live';
+  apiKey: string;
+  apiSecret: string;
+  accountId: string;
+  pickupPincode: string;
+  trackingUrlTemplate: string; // use {awb}
+  notes: string;
+}
+
+export interface IntegrationSettings {
+  webhook: WebhookConfig;
+  deliveryPartners: DeliveryPartner[];
+}
+
+export type HomeSectionId = 'home-featured' | 'home-new' | 'home-quiz';
+
+export type AutoRule = 'bestselling' | 'newest' | 'top-rated' | 'most-reviewed' | 'discount' | 'price-low' | 'price-high';
+
+export interface HomeSectionConfig {
+  mode: 'manual' | 'auto';
+  rule: AutoRule;
+  category: 'all' | CategoryType;
+  limit: number; // for the routine finder: per focus area
+  columns: 3 | 4;
+  hideOutOfStock: boolean;
+  order: string[]; // manual ordering of product ids
+}
+
+export interface ThemeSettings {
+  site: { preset: string; primary: string; accent: string }; // preset id or 'custom'
+  admin: { accent: string; sidebar: string };
+}
+
+export interface SiteSettings {
+  theme: ThemeSettings;
+  sections: {
+    announcementBar: boolean;
+    homeHero: boolean;
+    homeUsp: boolean;
+    homeCategories: boolean;
+    homeFeatured: boolean;
+    homeNew: boolean;
+    homeQuiz: boolean;
+    homeProcess: boolean;
+    homeFaq: boolean;
+  };
+  homeProducts: Record<HomeSectionId, HomeSectionConfig>;
+  newSectionTitle: string;
+  newSectionSubtitle: string;
+  storeOpen: boolean;
+  closedMessage: string;
+  codEnabled: boolean;
+  lowStockThreshold: number;
+  abandonAfterMinutes: number;
+  followUpCoupon: string;
+  followUpTemplates: Record<'added_to_cart' | 'checkout_started' | 'details_entered' | 'ordered' | 'general', string>;
 }
 
 export interface CartItem {
